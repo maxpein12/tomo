@@ -1,0 +1,414 @@
+/* General Layout */
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f6f9;
+    display: flex;
+    overflow-x: hidden;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    /* background-color: #fff; */
+    padding: 15px;
+    box-shadow: 2px 0 8px rgba(208, 208, 208, 0.1);
+    height: 100vh;
+    position: fixed;
+    top: 0; /* Ensure it starts from the top */
+    left: 0; /* Fixed position to the left */
+    transform: translateX(0); /* Initial position */
+    transition: transform 0.3s ease; 
+    overflow-y: auto;
+}
+.sidebar-header {
+    font-size: 24px;
+    font-weight: bold;
+    color: #3498db;
+}
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+}
+.sidebar-menu li {
+    display: flex;
+    align-items: center; /* Vertically align icon and text */
+    margin-bottom: 5px;
+}
+.sidebar-menu li a {
+    text-decoration: none;
+    /* color: #333; */
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    padding: 10px; /* Add padding to menu items */
+    border-radius: 8px; /* Rounded corners */
+    /* transition: background-color 0.3s ease; Smooth transition */
+}
+.sidebar-menu li a:hover {
+    /* background-color: #f0f0f0; Change background on hover */
+    padding-left: 10px;
+    border-radius: 5px;
+}
+.sidebar-menu li a.active {
+    background-color: #3498db; /* Active background color */
+    color: #fff; /*Active text color*/
+    width: 100%;
+}
+.sidebar-menu li a .menu-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px; /* Space between icon and text */
+    vertical-align: middle;
+    filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg) brightness(102%) contrast(102%);
+    /* filter: brightness(0) invert(1); */
+}
+.sidebar.hidden {
+    transform: translateX(-100%); /* Move the sidebar out of view */
+    transition: transform 0.3s ease; /* Smooth transition */
+}
+
+/* menu toggle */
+.menu-section {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #999;
+}
+.menu-button {
+    cursor: pointer; /* Change cursor to pointer on hover */
+    margin-right: 30px; /* Space between menu button and other elements */
+    width: 24px; /* Icon size */
+    height: 24px; /* Icon size */
+    margin-left: 20px;
+}
+
+.menu-button svg {
+    fill: #3498db; /* Change icon color */
+    width: 100%; /* Scale to fit the container */
+    height: 100%; /* Scale to fit the container */
+}
+
+/* Main Content */
+.main-content {
+    margin-left: 250px;
+    padding-top: 20px;
+    width: calc(100% - 250px);
+    /* background-color: #ff0000; */
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    transition: margin-left 0.3s ease, width 0.3s ease;
+}
+.main-content.hidden {
+    margin-left: 0; /* Remove left margin when sidebar is hidden */
+    width: 100%; /* Full width when sidebar is hidden */
+}
+.main-body {
+    /* margin-left: 250px; */
+    padding: 20px;
+    width: 100%;
+    background-color: rgb(38, 43, 48);
+    box-sizing: border-box;
+    border-radius: 10px;
+}
+
+
+
+/* Header Styles */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    /* background-color: white; */
+    box-shadow: 2px 0 8px rgba(208, 208, 208, 0.1);
+    margin-bottom: 20px;
+    border-radius: 10px;
+}
+
+/* Search bar styling */
+.search-bar input {
+    padding: 8px;
+    width: 500px;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    /* background-color: #e6e5e5; */
+    transition: margin-left 0.3s ease, width 0.3s ease;
+}
+
+/* Header options */
+.header-options {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    margin-right: 60px;
+}
+
+.header-options .notification-icon,
+.header-options .flag-icon {
+    margin-right: 20px;
+    font-size: 1.2rem;
+}
+
+/* User avatar */
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0; 
+        width: 100%;
+    }
+
+    .dashboard-metrics {
+        grid-template-columns: repeat(2, 1fr); 
+    }
+}
+
+
+
+
+
+
+/* Contact List Styles */
+.contact-list-container {
+    margin-top: 30px;
+    background-color: rgb(33,37,41);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 2px 0 8px rgba(208, 208, 208, 0.1);
+    overflow-y: scroll;
+}
+
+.contact-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#add-contact-btn {
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#contact-input-container {
+    margin-top: 15px;
+}
+
+#contact-input-container input {
+    width: calc(33% - 10px);
+    padding: 10px;
+    margin-right: 5px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+#save-contact-btn {
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Contact Grid Layout */
+.contact-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+    list-style: none;
+    justify-content: space-around;
+    overflow-y: scroll;
+}
+
+.contact {
+    width: 360px;
+    height: 450px;
+    background-color: rgb(33,37,41);
+    margin-bottom: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 2px 0 8px rgba(208, 208, 208, 0.2);
+}
+
+.profile-picture {
+    width: 360px;
+    height: 276px;
+    object-fit: cover;
+}
+
+.contact-info {
+    padding: 10px;
+    text-align: center;
+}
+
+.contact-name {
+    display: block;
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.contact-email {
+    display: block;
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.message-btn {
+    padding: 10px;
+    font-size: 14px;
+    border: none;
+    background-color: #28a745;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.fullscreen-mode {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+    z-index: 1000;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#contact-input-container input {
+    width: 80%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+  }
+  
+  #save-contact-btn, #cancel-contact-btn {
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 5px;
+  }
+  
+  #cancel-contact-btn {
+    background-color: #dc3545; /* Red for Cancel button */
+  }
+  
+  #contact-picture-preview {
+    width: 360px;
+    height: 276px;
+    margin-top: 10px;
+    border-radius: 5px;
+    object-fit: cover;
+    display: none;
+  }
+  
+  /* Profile picture wrapper styling */
+  .h1 {
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .profile-pic-wrapper {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.pic-holder {
+    position: relative;
+    display: inline-block;
+}
+
+.pic {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.upload-file-block {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    border-radius: 50%;
+    width: 200px;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.pic-holder:hover .upload-file-block {
+    opacity: 1;
+}
+  
+  /* Snackbar styling */
+  .snackbar {
+    visibility: hidden;
+    min-width: 250px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 2px;
+    padding: 16px;
+    position: fixed;
+    z-index: 1;
+    left: 50%;
+    bottom: 30px;
+    font-size: 14px;
+    transform: translateX(-50%);
+  }
+  
+  .snackbar.show {
+    visibility: visible;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  }
+  
+  @keyframes fadein {
+    from { bottom: 0; opacity: 0; }
+    to { bottom: 30px; opacity: 1; }
+  }
+  
+  @keyframes fadeout {
+    from { bottom: 30px; opacity: 1; }
+    to { bottom: 0; opacity: 0; }
+  }
+
+
+  .filter-white{
+    filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg) brightness(102%) contrast(102%);
+}

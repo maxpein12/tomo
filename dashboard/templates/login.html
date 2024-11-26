@@ -1,0 +1,47 @@
+
+<html lang="en">
+<head>
+    <title>Login Page</title>
+    <link rel="stylesheet" href="/static/css/Login.css">
+</head>
+<body>
+
+    <div class="login-container">
+        <h2>Login to Account</h2>
+        <p>Please enter your email and password to continue</p>
+        
+        <form  method="post" >
+            {% csrf_token %}
+            <div class="input-group">
+                <label for="email">Email address</label>
+                <input type="email" id="email" name="email" placeholder="tomodachi@gmail.com" required>
+            </div>
+
+            <div class="input-group">
+                <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="••••••••" required>
+                    <a href="#" class="forgot-password">Forget Password?</a>
+            </div>
+            
+
+            <div class="input-group checkbox-group">
+                <div class="checkbox-label">
+                    <input type="checkbox" id="rememberMe" name="rememberMe">
+                    <label for="rememberMe">Remember Password</label>
+                </div>
+
+            </div>
+
+            <button type="submit" value="Login" class="btn">Sign In</button>
+
+            <div class="register-link">
+                <p>Don't have an account? <a href="Register.html">Sign up</a></p>
+            </div>
+
+            <p id="errorMessage" class="error-message"></p>
+        </form>
+    </div>
+
+    <!-- <script src="/static/js/login.js"></script> -->
+</body>
+</html>

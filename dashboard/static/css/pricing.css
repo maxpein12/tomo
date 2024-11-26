@@ -1,0 +1,267 @@
+    /* General Layout */
+    body {
+        margin: 0;
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f6f9;
+        display: flex;
+        overflow-x: hidden;
+    }
+    
+    /* Sidebar */
+    .sidebar {
+        width: 250px;
+        /* background-color: #fff; */
+        padding: 15px;
+        box-shadow: 2px 0 8px rgba(208, 208, 208, 0.1);
+        height: 100vh;
+        position: fixed;
+        top: 0; /* Ensure it starts from the top */
+        left: 0; /* Fixed position to the left */
+        transform: translateX(0); /* Initial position */
+        transition: transform 0.3s ease; 
+        overflow-y: auto;
+    }
+    .sidebar-header {
+        font-size: 24px;
+        font-weight: bold;
+        color: #3498db;
+    }
+    .sidebar-menu {
+        list-style: none;
+        padding: 0;
+    }
+    .sidebar-menu li {
+        display: flex;
+        align-items: center; /* Vertically align icon and text */
+        margin-bottom: 5px;
+    }
+    .sidebar-menu li a {
+        text-decoration: none;
+        /* color: #333; */
+        display: flex;
+        align-items: center;
+        font-size: 16px;
+        padding: 10px; /* Add padding to menu items */
+        border-radius: 8px; /* Rounded corners */
+        /* transition: background-color 0.3s ease; Smooth transition */
+    }
+    .sidebar-menu li a:hover {
+        /* background-color: #f0f0f0; Change background on hover */
+        padding-left: 10px;
+        border-radius: 5px;
+    }
+    .sidebar-menu li a.active {
+        background-color: #3498db; /* Active background color */
+        color: #fff; /*Active text color*/
+        width: 100%;
+    }
+    .sidebar-menu li a .menu-icon {
+        width: 20px;
+        height: 20px;
+        margin-right: 10px; /* Space between icon and text */
+        vertical-align: middle;
+        filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg) brightness(102%) contrast(102%);
+        /* filter: brightness(0) invert(1); */
+    }
+    .sidebar.hidden {
+        transform: translateX(-100%); /* Move the sidebar out of view */
+        transition: transform 0.3s ease; /* Smooth transition */
+    }
+    
+    /* menu toggle */
+    .menu-section {
+        margin-top: 10px;
+        font-size: 14px;
+        color: #999;
+    }
+    .menu-button {
+        cursor: pointer; /* Change cursor to pointer on hover */
+        margin-right: 30px; /* Space between menu button and other elements */
+        width: 24px; /* Icon size */
+        height: 24px; /* Icon size */
+        margin-left: 20px;
+    }
+    
+    .menu-button svg {
+        fill: #3498db; /* Change icon color */
+        width: 100%; /* Scale to fit the container */
+        height: 100%; /* Scale to fit the container */
+    }
+    
+    /* Main Content */
+    .main-content {
+        margin-left: 250px;
+        padding-top: 20px;
+        width: calc(100% - 250px);
+        /* background-color: #ff0000; */
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+        transition: margin-left 0.3s ease, width 0.3s ease;
+    }
+    .main-content.hidden {
+        margin-left: 0; /* Remove left margin when sidebar is hidden */
+        width: 100%; /* Full width when sidebar is hidden */
+    }
+    .main-body {
+        /* margin-left: 250px; */
+        padding: 20px;
+        width: 100%;
+        background-color: rgb(38, 43, 48);
+        box-sizing: border-box;
+        border-radius: 10px;
+    }
+    
+    
+    
+    /* Header Styles */
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        /* background-color: white; */
+        box-shadow: 2px 0 8px rgba(208, 208, 208, 0.1);
+        margin-bottom: 20px;
+        border-radius: 10px;
+    }
+    
+    /* Search bar styling */
+    .search-bar input {
+        padding: 8px;
+        width: 500px;
+        border-radius: 20px;
+        border: 1px solid #ddd;
+        /* background-color: #e6e5e5; */
+        transition: margin-left 0.3s ease, width 0.3s ease;
+    }
+    
+    /* Header options */
+    .header-options {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        margin-right: 60px;
+    }
+    
+    .header-options .notification-icon,
+    .header-options .flag-icon {
+        margin-right: 20px;
+        font-size: 1.2rem;
+    }
+    
+    /* User avatar */
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+    
+    .container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        text-align: center;
+    }
+    
+    h1 {
+        margin-bottom: 20px;
+        font-size: 2.5em;
+        color: #333;
+    }
+    
+    .pricing-table {
+        display: flex;
+        justify-content: space-around;
+        gap: 20px;
+    }
+    
+    .plan {
+        background-color: rgb(33,37,41);
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 2px 0 8px rgba(208, 208, 208, 0.3);
+        width: 30%;
+        text-align: center;
+        position: relative;
+    }
+    
+    .plan h2 {
+        font-size: 1.8em;
+        margin-bottom: 10px;
+        color: #ffffff;
+    }
+    
+    .price {
+        font-size: 2.5em;
+        color: #007bff;
+        margin-bottom: 5px;
+        font-weight: bolder;
+    }
+    
+    .plan p {
+        color: #007bff;
+        margin-top: 20px;
+    }
+    
+    .plan ul {
+        list-style: none;
+        margin-bottom: 20px;
+    }
+    
+    .plan ul li {
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .disabled {
+        color: #ccc;
+        text-decoration: line-through;
+    }
+    
+    .get-started {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 25px;
+        padding: 10px 25px;
+        font-size: 1em;
+        cursor: pointer;
+        margin-bottom: 10px;
+        transition: background-color 0.3s ease;
+    }
+    
+    .get-started:hover {
+        background-color: #0056b3;
+    }
+    
+    .plan a {
+        display: block;
+        color: #007bff;
+        text-decoration: none;
+        margin-top: 10px;
+    }
+    
+    .plan a:hover {
+        text-decoration: underline;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .pricing-table {
+            flex-direction: column;
+            gap: 40px;
+        }
+    
+        .plan {
+            width: 100%;
+        }
+    }
+    
+
+    .filter-white{
+        filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg) brightness(102%) contrast(102%);
+    }

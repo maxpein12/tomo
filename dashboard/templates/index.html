@@ -1,0 +1,494 @@
+
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark" >
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" >
+        <div class="sidebar-header">
+            <h2>Tomodachi</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="{% url 'team' %}" class="menu-item">
+                <img src="https://cdn.creazilla.com/icons/3251108/person-icon-lg.png" class="menu-icon" alt="Dashboard Icon">
+                Team</a>
+            </li>
+            <li><a href="{% url 'inbox' %}" class="menu-item ">
+                <img src="https://cdn.icon-icons.com/icons2/1919/PNG/512/twospeechbubbles_122034.png" class="menu-icon" alt="Dashboard Icon">
+                Inbox</a>
+            </li>
+            <li><a href="{% url 'contact' %}" class="menu-item">
+                <img src="https://cdn-icons-png.flaticon.com/128/1250/1250592.png" class="menu-icon" alt="Dashboard Icon">
+                Contact</a>
+            </li>
+            <li><a href="{% url 'products' %}" class="menu-item">
+                <img src="https://cdn.icon-icons.com/icons2/2596/PNG/512/grid_four_icon_155315.png" class="menu-icon" alt="Dashboard Icon">
+                Products</a>
+            </li>
+            <li><a href="{% url 'pricing' %}" class="menu-item">
+                <img src="https://cdn-icons-png.flaticon.com/512/1039/1039714.png" class="menu-icon" alt="Dashboard Icon">
+                Pricing</a>
+            </li>
+            <li><a href="{% url 'orders' %}" class="menu-item">
+                <img src="https://www.svgrepo.com/show/335104/list-checkmark.svg" class="menu-icon" alt="Dashboard Icon">
+                Order Lists</a>
+            </li>
+            <li><a href="{% url 'stock' %}" class="menu-item">
+                <img src="https://static.thenounproject.com/png/602072-200.png" class="menu-icon" alt="Dashboard Icon">
+                Product Stock</a>
+            </li>
+            <li><a href="{% url 'orders' %}" class="menu-item">
+                <img src="https://www.svgrepo.com/show/335104/list-checkmark.svg" class="menu-icon" alt="Dashboard Icon">
+                Order Lists</a>
+            </li>
+            <li><a href="{% url 'index' %}" class="menu-item active">
+                <img src="https://cdn0.iconfinder.com/data/icons/octicons/1024/dashboard-512.png" class="menu-icon" alt="Dashboard Icon">
+                Dashboard</a>
+            </li>
+           
+            <li><a href="{% url 'logout' %}" class="menu-item">
+                <img src="https://cdn-icons-png.flaticon.com/512/157/157316.png" class="menu-icon" alt="Dashboard Icon">
+                Logout</a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Dashboard Content -->
+    <main class="main-content" data-bs-theme="dark">
+        <!-- <header class="dashboard-header">
+            <div class="menu-button" id="menuButton">
+                <img src="https://www.svgrepo.com/show/509382/menu.svg" alt="Menu Icon" width="24" height="24">
+            </div>
+            <div class="search-bar">
+                <input type="text" placeholder="Search">    
+            </div>
+            <div class="header-options">
+                
+                <span class="notification-icon">🔔</span>
+                <span class="flag-icon">🇬🇧</span>
+                <img src="https://static.vecteezy.com/system/resources/thumbnails/019/900/322/small/happy-young-cute-illustration-face-profile-png.png" alt="User Avatar" class="user-avatar">
+                <span class="user-info">Moni Roy</span>
+            </div>
+        </header> -->
+
+        <header class="dashboard-header">
+            <div class="menu-button" id="menuButton">
+                <img src="https://www.svgrepo.com/show/509382/menu.svg" alt="Menu Icon" width="24" height="24" class="filter-white">
+            </div>
+            <div class="search-bar">
+                <input type="text" placeholder="Search">
+            </div>
+            <div class="header-options">
+                <span class="notification-icon">🔔</span>
+        
+                <!-- Flag Language Dropdown -->
+                <div class="dropdown">
+                    <span class="flag-icon dropdown-toggle">🇬🇧</span>
+                    <div class="dropdown-menu">
+                        <a href="#" data-lang="English">English</a>
+                        <a href="#" data-lang="Tagalog">Tagalog</a>
+                        <a href="#" data-lang="Japanese">Japanese</a>
+                        <a href="#" data-lang="Add">Add More Languages...</a>
+                    </div>
+                </div>
+        
+                <!-- Profile Dropdown -->
+                <div class="dropdown">
+                    <img src="https://static.vecteezy.com/system/resources/thumbnails/019/900/322/small/happy-young-cute-illustration-face-profile-png.png" alt="User Avatar" class="user-avatar dropdown-toggle">
+                    <span class="user-info dropdown-toggle">{{ user.username }}</span>
+                    <div class="dropdown-menu">
+                        <a href="/admin/auth/user/{{ user.id }}/change/" target="_blank" >Manage Account</a>
+                        <a href="/admin/auth/user/{{ user.id }}/password/" target="_blank">Change Password</a>
+                        <a href="#">Activity Log</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <div class="main-body">
+            <div>
+                <h2>Dashboard</h2>
+            </div>    <!-- Dashboard Metrics -->
+            <section class="dashboard-metrics">
+                <div class="metric-card">
+                    <div class="metric-info">
+                        <img src="https://www.iconpacks.net/icons/1/free-users-icon-267-thumb.png" alt="Orders Icon" class="metric-icon"> <!-- Order Icon -->
+                        <h4>Total Users</h4>
+                        <p>
+                            {{ user_count }}
+                        </p>
+                    </div>
+                    <!-- <div class="metric-change">⬆ 8.5% from yesterday</div> -->
+                </div>
+                <div class="metric-card">
+                    <div class="metric-info">
+                        <img src="https://www.svgrepo.com/show/66812/box.svg" alt="Orders Icon" class="metric-icon"> <!-- Order Icon -->
+                        <h4>Total Orders</h4>
+                        <p>{{ order_count }}</p>
+                    </div>
+                    <!-- <div class="metric-change">⬆ 1.3% from last week</div> -->
+                </div>
+                <div class="metric-card">
+                    <div class="metric-info">
+                        <img src="https://icons.veryicon.com/png/o/business/p2p/total-sales-volume.png" alt="Orders Icon" class="metric-icon"> <!-- Order Icon -->
+                        <h4>Total Sales</h4>
+                        <p>${{ total_sales.total }}</p>
+                    </div>
+                    <!-- <div class="metric-change">⬇ 4.3% from yesterday</div> -->
+                </div>
+                <div class="metric-card">
+                    <div class="metric-info">
+                        <img src="https://static.thenounproject.com/png/2931158-200.png" alt="Orders Icon" class="metric-icon"> <!-- Order Icon -->
+                        <h4>Total Pending</h4>
+                        <p> {{ order_pending}} </p>
+                    </div>
+                    <!-- <div class="metric-change">⬆ 1.8% from yesterday</div> -->
+                </div>
+                <!-- Add New Metrics -->
+                <div class="metric-card">
+                    <img src="https://www.svgrepo.com/show/10155/delivered-box-verification-symbol.svg" class="metric-icon" alt="">
+                    <div class="metric-info">
+                        <h4>Total Delivered</h4>
+                        <p>{{ order_delivered }}</p>
+                    </div>
+                    <!-- <div class="metric-change">⬆ 0.5% from last month</div> -->
+                    
+                </div>
+            </section>
+            <!-- Sales Details Chart -->
+            <section class="chart-section">
+                <div>
+                    <h2>Sales details</h2>
+                </div>
+                <canvas id="salesChart" style="width: 100%; height: 500px;" ></canvas>
+                
+                <script>
+                    
+                    var jan = "{{ orders_january.total }}";
+                    var feb = "{{ orders_february.total }}";
+                    var mar = "{{ orders_march.total }}";
+                    var apr ="{{ orders_april.total }}";
+                    var may = "{{ orders_may.total }}";
+                    var jun = "{{ orders_june.total }}";
+                    var jul = "{{ orders_july.total }}";
+                    var aug = "{{ orders_august.total }}";
+                    var sep = "{{ orders_september.total }}";
+                    var oct = "{{ orders_october.total }}";
+                    var nov = "{{ orders_november.total }}";
+                    var dec = "{{ orders_december.total }}";
+                    var iPhone = "{{ iPhone_price }}";
+                    var Mac = "{{ Mac_price }}";
+                    var AppleWatch = "{{ AppleWatch_price }}";
+                    var quantity = getElementById("quantity");
+                    var product = getElementById("product");
+                    
+                  
+                
+                </script>
+
+            </section>
+
+            
+            <!-- Deals Details Table -->
+            <section class="deals-details">
+
+                
+                    <h2>Deals details</h2>
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Product Name</th>
+                            <th>Location</th>
+                            <th>Date</th>
+                            <th>Piece</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            {% if order.type == 'Apple Watch' %}<td id="product"><img src="https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/MXM23ref_FV99_VW_34FR+watch-case-46-aluminum-jetblack-nc-s10_VW_34FR+watch-face-46-aluminum-jetblack-s10_VW_34FR?wid=5120&hei=3280&bgc=fafafa&trim=1&fmt=p-jpg&qlt=80&.v=TnVrdDZWRlZzTURKbHFqOGh0dGpVRW5TeWJ6QW43NUFnQ2V4cmRFc1VnYUdWejZ5THhpKzJwRmRDYlhxN2o5aXB2QjR6TEZ4ZThxM3VqYkZobmlXM3RGNnlaeXQ4NGFKQTAzc0NGeHR2aVk0VEhOZEFKYmY1ZHNpalQ3YVhOWk9WVlBjZVFuazArV21YaFcvTVJ5dzRuY0dmQWU1UUhxNENQZVRyQjk5ZnRCcVBpVENpMUluRnVNbld0T1NWSFh2cXlYK1hMV0U1ZW9xcCtlRHF3V3gyZThGL0dtL1JkeEJQSnRCMXJsZFBFY2doN2ZiODFwWklZeDgrZ0RtbVRXag" alt="Apple Watch" class="product-image"> Apple Watch</td>
+                            {% elif order.type == 'Mac' %} <td id="product"><img src="https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/mba13-m2-digitalmat-gallery-1-202402?wid=728&hei=666&fmt=png-alpha&.v=1707263976493" alt="Macbook" class="product-image" > Macbook</td>
+                            {% elif order.type == 'iPhone' %}<td id="product"><img src="https://beyondthebox.ph/cdn/shop/products/IPHONE121_COLOR-PURPLE_CAPACITY-ALL_576x.png?v=1631584588" alt="iPhone" class="product-image" > iPhone</td>
+                            {% endif %}
+                            <td>{{ order.address }}</td>
+                            <td>{{ order.date }}</td>
+                            <td id="quantity">{{ order.quantity }}</td>
+                            <td id="price">${{ order.price }}</td>
+                            {% if order.is_completed %}<td><span class="badge bg-success">Delivered</span></td>
+                            {% else %}<td><span class="badge bg-warning">Pending</span></td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                        
+                    </tbody>
+                </table>
+            </section>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/dashboard.js"></script>
+    <script>
+        Chart.defaults.global.defaultFontColor = "#fff";
+    </script>
+</body>
+
+</html>
+
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark" >
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" >
+        <div class="sidebar-header">
+            <h2>Tomodachi</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="{% url 'team' %}" class="menu-item">
+                <img src="https://cdn.creazilla.com/icons/3251108/person-icon-lg.png" class="menu-icon" alt="Dashboard Icon">
+                Team</a>
+            </li>
+            <li><a href="{% url 'inbox' %}" class="menu-item ">
+                <img src="https://cdn.icon-icons.com/icons2/1919/PNG/512/twospeechbubbles_122034.png" class="menu-icon" alt="Dashboard Icon">
+                Inbox</a>
+            </li>
+            <li><a href="{% url 'contact' %}" class="menu-item">
+                <img src="https://cdn-icons-png.flaticon.com/128/1250/1250592.png" class="menu-icon" alt="Dashboard Icon">
+                Contact</a>
+            </li>
+            <li><a href="{% url 'products' %}" class="menu-item">
+                <img src="https://cdn.icon-icons.com/icons2/2596/PNG/512/grid_four_icon_155315.png" class="menu-icon" alt="Dashboard Icon">
+                Products</a>
+            </li>
+            <li><a href="{% url 'pricing' %}" class="menu-item">
+                <img src="https://cdn-icons-png.flaticon.com/512/1039/1039714.png" class="menu-icon" alt="Dashboard Icon">
+                Pricing</a>
+            </li>
+            <li><a href="{% url 'orders' %}" class="menu-item">
+                <img src="https://www.svgrepo.com/show/335104/list-checkmark.svg" class="menu-icon" alt="Dashboard Icon">
+                Order Lists</a>
+            </li>
+            <li><a href="{% url 'stock' %}" class="menu-item">
+                <img src="https://static.thenounproject.com/png/602072-200.png" class="menu-icon" alt="Dashboard Icon">
+                Product Stock</a>
+            </li>
+            <li><a href="{% url 'orders' %}" class="menu-item">
+                <img src="https://www.svgrepo.com/show/335104/list-checkmark.svg" class="menu-icon" alt="Dashboard Icon">
+                Order Lists</a>
+            </li>
+            <li><a href="{% url 'index' %}" class="menu-item active">
+                <img src="https://cdn0.iconfinder.com/data/icons/octicons/1024/dashboard-512.png" class="menu-icon" alt="Dashboard Icon">
+                Dashboard</a>
+            </li>
+           
+            <li><a href="{% url 'logout' %}" class="menu-item">
+                <img src="https://cdn-icons-png.flaticon.com/512/157/157316.png" class="menu-icon" alt="Dashboard Icon">
+                Logout</a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Dashboard Content -->
+    <main class="main-content" data-bs-theme="dark">
+        <!-- <header class="dashboard-header">
+            <div class="menu-button" id="menuButton">
+                <img src="https://www.svgrepo.com/show/509382/menu.svg" alt="Menu Icon" width="24" height="24">
+            </div>
+            <div class="search-bar">
+                <input type="text" placeholder="Search">    
+            </div>
+            <div class="header-options">
+                
+                <span class="notification-icon">🔔</span>
+                <span class="flag-icon">🇬🇧</span>
+                <img src="https://static.vecteezy.com/system/resources/thumbnails/019/900/322/small/happy-young-cute-illustration-face-profile-png.png" alt="User Avatar" class="user-avatar">
+                <span class="user-info">Moni Roy</span>
+            </div>
+        </header> -->
+
+        <header class="dashboard-header">
+            <div class="menu-button" id="menuButton">
+                <img src="https://www.svgrepo.com/show/509382/menu.svg" alt="Menu Icon" width="24" height="24" class="filter-white">
+            </div>
+            <div class="search-bar">
+                <input type="text" placeholder="Search">
+            </div>
+            <div class="header-options">
+                <span class="notification-icon">🔔</span>
+        
+                <!-- Flag Language Dropdown -->
+                <div class="dropdown">
+                    <span class="flag-icon dropdown-toggle">🇬🇧</span>
+                    <div class="dropdown-menu">
+                        <a href="#" data-lang="English">English</a>
+                        <a href="#" data-lang="Tagalog">Tagalog</a>
+                        <a href="#" data-lang="Japanese">Japanese</a>
+                        <a href="#" data-lang="Add">Add More Languages...</a>
+                    </div>
+                </div>
+        
+                <!-- Profile Dropdown -->
+                <div class="dropdown">
+                    <img src="https://static.vecteezy.com/system/resources/thumbnails/019/900/322/small/happy-young-cute-illustration-face-profile-png.png" alt="User Avatar" class="user-avatar dropdown-toggle">
+                    <span class="user-info dropdown-toggle">{{ user.username }}</span>
+                    <div class="dropdown-menu">
+                        <a href="/admin/auth/user/{{ user.id }}/change/" target="_blank" >Manage Account</a>
+                        <a href="/admin/auth/user/{{ user.id }}/password/" target="_blank">Change Password</a>
+                        <a href="#">Activity Log</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <div class="main-body">
+            <div>
+                <h2>Dashboard</h2>
+            </div>    <!-- Dashboard Metrics -->
+            <section class="dashboard-metrics">
+                <div class="metric-card">
+                    <div class="metric-info">
+                        <img src="https://www.iconpacks.net/icons/1/free-users-icon-267-thumb.png" alt="Orders Icon" class="metric-icon"> <!-- Order Icon -->
+                        <h4>Total Users</h4>
+                        <p>
+                            {{ user_count }}
+                        </p>
+                    </div>
+                    <!-- <div class="metric-change">⬆ 8.5% from yesterday</div> -->
+                </div>
+                <div class="metric-card">
+                    <div class="metric-info">
+                        <img src="https://www.svgrepo.com/show/66812/box.svg" alt="Orders Icon" class="metric-icon"> <!-- Order Icon -->
+                        <h4>Total Orders</h4>
+                        <p>{{ order_count }}</p>
+                    </div>
+                    <!-- <div class="metric-change">⬆ 1.3% from last week</div> -->
+                </div>
+                <div class="metric-card">
+                    <div class="metric-info">
+                        <img src="https://icons.veryicon.com/png/o/business/p2p/total-sales-volume.png" alt="Orders Icon" class="metric-icon"> <!-- Order Icon -->
+                        <h4>Total Sales</h4>
+                        <p>${{ total_sales.total }}</p>
+                    </div>
+                    <!-- <div class="metric-change">⬇ 4.3% from yesterday</div> -->
+                </div>
+                <div class="metric-card">
+                    <div class="metric-info">
+                        <img src="https://static.thenounproject.com/png/2931158-200.png" alt="Orders Icon" class="metric-icon"> <!-- Order Icon -->
+                        <h4>Total Pending</h4>
+                        <p> {{ order_pending}} </p>
+                    </div>
+                    <!-- <div class="metric-change">⬆ 1.8% from yesterday</div> -->
+                </div>
+                <!-- Add New Metrics -->
+                <div class="metric-card">
+                    <img src="https://www.svgrepo.com/show/10155/delivered-box-verification-symbol.svg" class="metric-icon" alt="">
+                    <div class="metric-info">
+                        <h4>Total Delivered</h4>
+                        <p>{{ order_delivered }}</p>
+                    </div>
+                    <!-- <div class="metric-change">⬆ 0.5% from last month</div> -->
+                    
+                </div>
+            </section>
+            <!-- Sales Details Chart -->
+            <section class="chart-section">
+                <div>
+                    <h2>Sales details</h2>
+                </div>
+                <canvas id="salesChart" style="width: 100%; height: 500px;" ></canvas>
+                
+                <script>
+                    
+                    var jan = "{{ orders_january.total }}";
+                    var feb = "{{ orders_february.total }}";
+                    var mar = "{{ orders_march.total }}";
+                    var apr ="{{ orders_april.total }}";
+                    var may = "{{ orders_may.total }}";
+                    var jun = "{{ orders_june.total }}";
+                    var jul = "{{ orders_july.total }}";
+                    var aug = "{{ orders_august.total }}";
+                    var sep = "{{ orders_september.total }}";
+                    var oct = "{{ orders_october.total }}";
+                    var nov = "{{ orders_november.total }}";
+                    var dec = "{{ orders_december.total }}";
+                    var iPhone = "{{ iPhone_price }}";
+                    var Mac = "{{ Mac_price }}";
+                    var AppleWatch = "{{ AppleWatch_price }}";
+                    var quantity = getElementById("quantity");
+                    var product = getElementById("product");
+                    
+                  
+                
+                </script>
+
+            </section>
+
+            
+            <!-- Deals Details Table -->
+            <section class="deals-details">
+
+                
+                    <h2>Deals details</h2>
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Product Name</th>
+                            <th>Location</th>
+                            <th>Date</th>
+                            <th>Piece</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            {% if order.type == 'Apple Watch' %}<td id="product"><img src="https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/MXM23ref_FV99_VW_34FR+watch-case-46-aluminum-jetblack-nc-s10_VW_34FR+watch-face-46-aluminum-jetblack-s10_VW_34FR?wid=5120&hei=3280&bgc=fafafa&trim=1&fmt=p-jpg&qlt=80&.v=TnVrdDZWRlZzTURKbHFqOGh0dGpVRW5TeWJ6QW43NUFnQ2V4cmRFc1VnYUdWejZ5THhpKzJwRmRDYlhxN2o5aXB2QjR6TEZ4ZThxM3VqYkZobmlXM3RGNnlaeXQ4NGFKQTAzc0NGeHR2aVk0VEhOZEFKYmY1ZHNpalQ3YVhOWk9WVlBjZVFuazArV21YaFcvTVJ5dzRuY0dmQWU1UUhxNENQZVRyQjk5ZnRCcVBpVENpMUluRnVNbld0T1NWSFh2cXlYK1hMV0U1ZW9xcCtlRHF3V3gyZThGL0dtL1JkeEJQSnRCMXJsZFBFY2doN2ZiODFwWklZeDgrZ0RtbVRXag" alt="Apple Watch" class="product-image"> Apple Watch</td>
+                            {% elif order.type == 'Mac' %} <td id="product"><img src="https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/mba13-m2-digitalmat-gallery-1-202402?wid=728&hei=666&fmt=png-alpha&.v=1707263976493" alt="Macbook" class="product-image" > Macbook</td>
+                            {% elif order.type == 'iPhone' %}<td id="product"><img src="https://beyondthebox.ph/cdn/shop/products/IPHONE121_COLOR-PURPLE_CAPACITY-ALL_576x.png?v=1631584588" alt="iPhone" class="product-image" > iPhone</td>
+                            {% endif %}
+                            <td>{{ order.address }}</td>
+                            <td>{{ order.date }}</td>
+                            <td id="quantity">{{ order.quantity }}</td>
+                            <td id="price">${{ order.price }}</td>
+                            {% if order.is_completed %}<td><span class="badge bg-success">Delivered</span></td>
+                            {% else %}<td><span class="badge bg-warning">Pending</span></td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                        
+                    </tbody>
+                </table>
+            </section>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/dashboard.js"></script>
+    <script>
+        Chart.defaults.global.defaultFontColor = "#fff";
+    </script>
+</body>
+
+</html>

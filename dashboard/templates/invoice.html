@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="/static/css/invoice.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>DashStack</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="{% url 'index' %}" class="menu-item">
+                <img src="https://cdn0.iconfinder.com/data/icons/octicons/1024/dashboard-512.png" class="menu-icon" alt="Dashboard Icon">
+                Dashboard</a>
+            </li>
+            <li><a href="{% url 'products' %}" class="menu-item">
+                <img src="https://cdn.icon-icons.com/icons2/2596/PNG/512/grid_four_icon_155315.png" class="menu-icon" alt="Dashboard Icon">
+                Products</a>
+            </li>
+            <li><a href="{% url 'favorites' %}" class="menu-item">
+                <img src="https://www.svgrepo.com/show/54280/favorite.svg" class="menu-icon" alt="Dashboard Icon">
+                Favorites</a>
+            </li>
+            <li><a href="{% url 'inbox' %}" class="menu-item">
+                <img src="https://cdn.icon-icons.com/icons2/1919/PNG/512/twospeechbubbles_122034.png" class="menu-icon" alt="Dashboard Icon">
+                Inbox</a>
+            </li>
+            <li><a href="{% url 'orders' %}" class="menu-item">
+                <img src="https://www.svgrepo.com/show/335104/list-checkmark.svg" class="menu-icon" alt="Dashboard Icon">
+                Order Lists</a>
+            </li>
+            <li><a href="{% url 'stock' %}" class="menu-item">
+                <img src="https://static.thenounproject.com/png/602072-200.png" class="menu-icon" alt="Dashboard Icon">
+                Product Stock</a>
+            </li>
+            <hr>
+            <li class="menu-section">PAGES</li>
+            <li><a href="{% url 'pricing' %}" class="menu-item">
+                <img src="https://cdn-icons-png.flaticon.com/512/1039/1039714.png" class="menu-icon" alt="Dashboard Icon">
+                Pricing</a>
+            </li>
+            <li><a href="{% url 'calendar' %}" class="menu-item">
+                <img src="https://i.pinimg.com/originals/ca/1a/3c/ca1a3c69fe05ba3696c8169a0e011ecc.png" class="menu-icon" alt="Dashboard Icon">
+                Calendar</a>
+            </li>
+            <li><a href="{% url 'todo' %}" class="menu-item">
+                <img src="https://www.freeiconspng.com/thumbs/list-icon/--check-list-checklist-do-list-tick-to-icon--icon-search-engine-17.png" class="menu-icon" alt="Dashboard Icon">
+                To-Do</a>
+            </li>
+            <li><a href="{% url 'contact' %}" class="menu-item">
+                <img src="https://cdn-icons-png.flaticon.com/128/1250/1250592.png" class="menu-icon" alt="Dashboard Icon">
+                Contact</a>
+            </li>
+            <li><a href="{% url 'invoice' %}" class="menu-item active">
+                <img src="https://www.freeiconspng.com/thumbs/invoices-icon/invoices-icon-3.png" class="menu-icon" alt="Dashboard Icon">
+                Invoice</a>
+            </li>
+            <li><a href="#" class="menu-item">
+                <img src="https://static.thenounproject.com/png/1792984-200.png" class="menu-icon" alt="Dashboard Icon">
+                UI Elements</a>
+            </li>
+            <li><a href="{% url 'team' %}" class="menu-item">
+                <img src="https://cdn.creazilla.com/icons/3251108/person-icon-lg.png" class="menu-icon" alt="Dashboard Icon">
+                Team</a>
+            </li>
+            <li><a href="{% url 'table' %}" class="menu-item">
+                <img src="https://static-00.iconduck.com/assets.00/grid-3x3-icon-512x512-95d9oi1f.png" class="menu-icon" alt="Dashboard Icon">
+                Table</a>
+            </li>
+            <hr>
+            <li><a href="#" class="menu-item">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Windows_Settings_app_icon.png/600px-Windows_Settings_app_icon.png" class="menu-icon" alt="Dashboard Icon">
+                Settings</a>
+            </li>
+            <li><a href="{% url 'logout' %}" class="menu-item">
+                <img src="https://cdn-icons-png.flaticon.com/512/157/157316.png" class="menu-icon" alt="Dashboard Icon">
+                Logout</a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Dashboard Content -->
+    <main class="main-content">
+        <header class="dashboard-header">
+            <div class="menu-button" id="menuButton">
+                <img src="https://www.svgrepo.com/show/509382/menu.svg" alt="Menu Icon" width="24" class="filter-white" height="24">
+            </div>
+            <div class="search-bar">
+                <input type="text" placeholder="Search">
+            </div>
+            <div class="header-options">
+                <span class="notification-icon">🔔</span>
+                <span class="flag-icon">🇬🇧</span>
+                <img src="https://static.vecteezy.com/system/resources/thumbnails/019/900/322/small/happy-young-cute-illustration-face-profile-png.png"
+                    alt="User Avatar" class="user-avatar">
+                <span class="user-info">{{ user.username }}</span>
+            </div>
+        </header>
+
+        <div class="col-md-10 content">
+            <nav class="navbar navbar-dark bg-dark" style=" box-shadow: 2px 0 8px rgba(208, 208, 208, 0.1);">
+                <div class="container-fluid">
+                    <div class="navbar-brand">Invoice</div>
+                    <div class="d-flex align-items-center">
+                        <div class="dropdown me-3">
+                            <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-globe"></i> English
+                            </button>
+                        </div>
+                        <img src="https://via.placeholder.com/40" class="rounded-circle me-3" alt="user">
+                        <span>Moni Roy</span>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="invoice-section mt-4">
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <h5>Invoice From:</h5>
+                        <p>Virginia Walker<br>9694 Krajcik Locks Suite 635</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>Invoice To:</h5>
+                        <p> <br>Brookview</p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <p>Invoice Date: <strong>12 Nov 2019</strong></p>
+                        <p>Due Date: <strong>25 Dec 2019</strong></p>
+                    </div>
+                </div>
+
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Serial No.</th>
+                            <th>Description</th>
+                            <th>Quantity</th>
+                            <th>Base Cost</th>
+                            <th>Total Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Children Toy</td>
+                            <td>2</td>
+                            <td>$20</td>
+                            <td>$80</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Makeup</td>
+                            <td>2</td>
+                            <td>$50</td>
+                            <td>$100</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Asus Laptop</td>
+                            <td>5</td>
+                            <td>$100</td>
+                            <td>$500</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Iphone X</td>
+                            <td>4</td>
+                            <td>$1000</td>
+                            <td>$4000</td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="text-end"><strong>Total = </strong></td>
+                            <td><strong>$4680</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-outline-secondary me-2"><i class="fas fa-print"></i></button>
+                    <button class="btn btn-primary"><i class="fas fa-paper-plane"></i> Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/invoice.js"></script>
+</body>
+
+</html>
