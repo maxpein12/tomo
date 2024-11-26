@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'dashboard',
+    
+    
 ]
 
 MIDDLEWARE = [
@@ -149,3 +151,11 @@ AUTHENTICATION_BACKENDS = [
     'dashboard.auth_backend.SHA2Backend',
     'django.contrib.auth.backends.ModelBackend',
 ]
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'my_cache',
+        'TIMEOUT': 60 * 60,
+    }
+}

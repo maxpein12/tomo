@@ -116,19 +116,33 @@ def todo(request):
     return render(request, 'to-do.html')
 
 
+from django.core.cache import cache
+
 def contact(request):
-    users = Users.objects.all()
-    users_with_post_count = []
-    
-    for user in users:
-        post_count = Posts.objects.filter(fkuser=user).count()
-        profile_photo = ''
-        try:
-            profile_photo = Users.objects.get(pk=user.pk).profile_photo
-        except:
-            pass
-        users_with_post_count.append({'user': user, 'post_count': post_count, 'profile_photo': profile_photo})
-    
+    # Check if the contact data is cached
+    contact_data = cache.get('contact_data')
+
+    if contact_data is None:
+        # If the contact data is not cached, retrieve it from the database
+        users = Users.objects.all()
+        users_with_post_count = []
+
+        for user in users:
+            post_count = Posts.objects.filter(fkuser=user).count()
+            profile_photo = ''
+            try:
+                profile_photo = Users.objects.get(pk=user.pk).profile_photo
+            except:
+                pass
+            users_with_post_count.append({'user': user, 'post_count': post_count, 'profile_photo': profile_photo})
+
+        # Cache the contact data for 1 hour
+        cache.set('contact_data', users_with_post_count, 60 * 60)
+    else:
+        # If the contact data is cached, use it
+        users_with_post_count = contact_data
+
+    # Render the contact page with the contact data
     return render(request, 'contact.html', {'users_with_post_count': users_with_post_count})
    
 
@@ -249,8 +263,22 @@ def test(request, pkuser):
     return render(request, 'test.html', {'form': form, 'user': user, 'posts': posts, 'pkuser': pkuser})
 
 
+from django.core.cache import cache
+
 def products(request):
-    posts = Posts.objects.all().order_by('-datetime')
+    # Check if the product data is cached
+    product_data = cache.get('product_data')
+
+    if product_data is None:
+        # If the product data is not cached, retrieve it from the database
+        posts = Posts.objects.all().order_by('-datetime')
+
+        # Cache the product data for 1 hour
+        cache.set('product_data', posts, 60 * 60)
+    else:
+        # If the product data is cached, use it
+        posts = product_data
+
     return render(request, 'products.html', {'posts': posts})
 
 # def update_user(request, pkuser):
