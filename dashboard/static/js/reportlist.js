@@ -25,3 +25,28 @@ prevButton.addEventListener('click', function () {
 nextButton.addEventListener('click', function () {
     console.log('Next page');
 });
+
+
+function searchReports() {
+    var rows = document.querySelectorAll('.table tbody tr');
+    let input = document.getElementById('search').value.toLowerCase();
+  
+    for (i = 0; i < rows.length; i++) {
+      let cells = rows[i].querySelectorAll('td');
+      let match = false;
+  
+      for (j = 0; j < cells.length; j++) {
+        let cellText = cells[j].textContent.toLowerCase();
+        if (cellText.includes(input)) {
+          match = true;
+          break;
+        }
+      }
+  
+      if (match) {
+        rows[i].style.display = 'table-row';
+      } else {
+        rows[i].style.display = 'none';
+      }
+    }
+  }

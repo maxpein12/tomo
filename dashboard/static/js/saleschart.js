@@ -3,7 +3,7 @@ const ctx = document.getElementById('salesChart').getContext('2d');
 const salesChart = new Chart(ctx, {
     type: 'line',
     data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        labels: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
         datasets: [{
             label: 'Sales',
             data: [jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec],
@@ -12,32 +12,29 @@ const salesChart = new Chart(ctx, {
             borderColor: '#3498db',
             borderWidth: 2,
             fill: true,
-
-            
+            tension: 0.5,
+            spanGaps: true
         }],
-        
     },
     options: {
         scales: {
             y: {
                 grid: {
-                   
                     color: "#6c757d"
-                  },
+                },
                 beginAtZero: true,
-                    ticks:{
-                        color: "white"
-                    }
-                
-            },
-            x: {
-                grid: {
-                   
-                    color: "#6c757d"
-                  },
                 ticks: {
                     color: "white"
                 }
+            },
+            x: {
+                grid: {
+                    color: "#6c757d"
+                },
+                ticks: {
+                    color: "white"
+                },
+                beginAtZero: true
             }
         },
         grid: {
@@ -114,4 +111,4 @@ languageLinks.forEach(link => {
     });
 });
 
-
+// Update the chart when the year filter changes

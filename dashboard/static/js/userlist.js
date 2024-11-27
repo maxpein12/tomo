@@ -127,7 +127,11 @@ function searchContacts() {
   var li = document.getElementsByClassName("contact");
   let input = document.getElementById('search').value.toLowerCase();
   let status = document.getElementById('status').value;
+  let sortOrder = document.getElementById('status').value;
 
+  let count = 0; // Initialize a variable to count the number of results
+
+  // Filter the contacts based on the search input and status
   for (i = 0; i < li.length; i++) {
     let name = li[i].querySelector('.contact-name').textContent.toLowerCase();
     let email = li[i].querySelector('.contact-email').textContent.toLowerCase();
@@ -137,12 +141,16 @@ function searchContacts() {
     if (status !== "all") {
       if (status === "online" && onlineOfflineStatus === "online") {
         li[i].style.display = "block";
+        count++; // Increment the count if the contact is displayed
       } else if (status === "offline" && onlineOfflineStatus === "offline") {
         li[i].style.display = "block";
+        count++; // Increment the count if the contact is displayed
       } else if (status === "It was not accepted due to a comprehensive judgement." && ageVerified.includes("it was not accepted due to a comprehensive judgement")) {
         li[i].style.display = "block";
+        count++; // Increment the count if the contact is displayed
       } else if (ageVerified.includes(status)) {
         li[i].style.display = "block";
+        count++; // Increment the count if the contact is displayed
       } else {
         li[i].style.display = "none";
       }
@@ -150,9 +158,37 @@ function searchContacts() {
       li[i].style.display = "none";
     } else {
       li[i].style.display = "block";
+      count++; // Increment the count if the contact is displayed
     }
   }
+
+  // Update the count display
+  document.getElementById('total-users-count').innerHTML = count;
+
+  // If the sort order is 'newest' or 'oldest', send a request to the server to re-sort the data
+  if (sortOrder === "newest" || sortOrder === "oldest") {
+    let url = window.location.href;
+    let params = new URLSearchParams(url.split('?')[1]);
+    params.set('sort', sortOrder);
+    window.location.href = url.split('?')[0] + '?' + params.toString();
+  }
 }
+
+// function updateTotalUsersCount() {
+//   console.log('updateTotalUsersCount called'); // Add this line to see if the function is being called
+//   var filterValue = document.getElementById('status').value;
+//   var url = "{{ url 'update_total_users_count' }}"; // URL of the new view
+//   var data = {'filter': filterValue, 'csrfmiddlewaretoken': '{{ csrf_token }}'};
+
+//   $.ajax({
+//     type: 'POST',
+//     url: url,
+//     data: data,
+//     success: function(response) {
+//       document.getElementById('total-users-count').innerHTML = response.total_users;
+//     }
+//   });
+// }
 
 
 // var pkuser = '{{ user_with_post_count.user.pk }}';

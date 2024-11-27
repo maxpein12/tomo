@@ -1,66 +1,13 @@
+# This is an auto-generated Django model module.
+# You'll have to do the following manually to clean this up:
+#   * Rearrange models' order
+#   * Make sure each model has one field with primary_key=True
+#   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
+#   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
+# Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
-from django.contrib.auth.models import User
-from django.utils import timezone
-from django.contrib.auth.hashers import check_password
-
-# Create your models here.
-class Team(models.Model):
-    name = models.CharField(max_length=100)
-    role = models.CharField(max_length=100)
-    email = models.EmailField()
-    image = models.ImageField(upload_to='images')
-
-    def __str__(self):
-        return self.name
-    
 
 
-class Client(models.Model):
-    username = models.CharField(max_length=100, default='')
-    name = models.CharField(max_length=100)
-    points = models.IntegerField(default=0)
-    email = models.EmailField()
-    profile_pic = models.CharField(max_length=100, default='')
-    age = models.IntegerField(default=0)
-    gender = models.CharField(max_length=100)
-    # image = models.ImageField(upload_to='images')
-
-    def __str__(self):
-        return f'{self.name} {self.email} {self.gender}'
-    
-    
-class Product(models.Model):
-    name = models.CharField(max_length=100)
-    category = models.CharField(max_length=100)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    piece = models.IntegerField()
-    # image = models.ImageField(upload_to='images')
-
-    def __str__(self):
-        return self.name
-    
-
-class Orders(models.Model):
-    name = models.CharField(max_length=100)
-    address = models.CharField(max_length=100)
-    date = models.DateField(default=timezone.now)
-    type = models.CharField(max_length=100)
-    quantity = models.IntegerField(8)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    is_completed = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.name
-    
-
-class Messages(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    message = models.TextField()
-    timestamp = models.DateTimeField(default=timezone.now)
-
-    def __str__(self):
-        return self.message
-    
 class AdminInquiry(models.Model):
     pkadmin_inquiry = models.BigAutoField(primary_key=True)
     message = models.TextField(blank=True, null=True)
@@ -253,7 +200,7 @@ class Inquiries(models.Model):
 class Match(models.Model):
     pkmatch = models.BigAutoField(primary_key=True)
     user_from = models.ForeignKey('Users', models.DO_NOTHING, db_column='user_from', blank=True, null=True)
-    user_to = models.ForeignKey('Users', models.DO_NOTHING, db_column='user_to', related_name='match_user_to_set', blank=True, null=True)
+    user_to = models.BigIntegerField(blank=True, null=True)
     matched = models.IntegerField(blank=True, null=True)
     date_time = models.CharField(max_length=50, blank=True, null=True)
     accepted = models.IntegerField(blank=True, null=True)
@@ -278,16 +225,17 @@ class MessageTemplates(models.Model):
 
 class Messages(models.Model):
     pkmessage = models.BigAutoField(primary_key=True)
-    msg_from = models.ForeignKey('Users', models.DO_NOTHING, db_column='msg_from', blank=True, null=True)
-    msg_to = models.ForeignKey('Users', models.DO_NOTHING, db_column='msg_to', related_name='messages_msg_to_set', blank=True, null=True)
-    data = models.TextField(blank=True, null=True)
-    type = models.CharField(max_length=50, db_collation='utf16_unicode_ci', blank=True, null=True)
-    datetime = models.CharField(max_length=50, db_collation='utf16_unicode_ci', blank=True, null=True)
-    timezone = models.CharField(max_length=50, db_collation='utf16_unicode_ci', blank=True, null=True)
+    msg_from = models.BigIntegerField(blank=True, null=True)
+    msg_to = models.BigIntegerField(blank=True, null=True)
+    data = models.CharField(max_length=255, blank=True, null=True)
+    type = models.CharField(max_length=50, db_collation='utf8mb4_unicode_ci', blank=True, null=True)
+    datetime = models.CharField(max_length=50, db_collation='utf8mb4_unicode_ci', blank=True, null=True)
+    timezone = models.CharField(max_length=50, db_collation='utf8mb4_unicode_ci', blank=True, null=True)
     read = models.IntegerField(blank=True, null=True)
     save = models.IntegerField(blank=True, null=True)
     callstatus = models.IntegerField(blank=True, null=True)
-    token = models.CharField(max_length=255, blank=True, null=True)
+    token = models.CharField(max_length=255, db_collation='utf8mb4_unicode_ci', blank=True, null=True)
+    call_duration = models.CharField(max_length=50, db_collation='utf8mb4_unicode_ci', blank=True, null=True)
 
     class Meta:
         managed = False
@@ -309,7 +257,7 @@ class Points(models.Model):
     pkpoint = models.BigAutoField(primary_key=True)
     count = models.IntegerField(blank=True, null=True)
     fkuser = models.ForeignKey('Users', models.DO_NOTHING, db_column='fkuser', blank=True, null=True)
-    datetime = models.CharField(max_length=20, blank=True, null=True)
+    datetime = models.CharField(max_length=20, db_collation='utf16_unicode_ci', blank=True, null=True)
 
     class Meta:
         managed = False
@@ -336,7 +284,7 @@ class PointsBundle(models.Model):
 class PostComments(models.Model):
     pkpost_comment = models.BigAutoField(primary_key=True)
     fkuser = models.ForeignKey('Users', models.DO_NOTHING, db_column='fkuser', blank=True, null=True)
-    comment = models.TextField(db_collation='utf8mb4_unicode_520_ci', blank=True, null=True)
+    comment = models.TextField(db_collation='utf8mb4_unicode_ci', blank=True, null=True)
     fkpost = models.BigIntegerField(blank=True, null=True)
     datetime = models.CharField(max_length=50, db_collation='utf16_unicode_ci', blank=True, null=True)
 
@@ -368,8 +316,8 @@ class PostUnlikes(models.Model):
 class Posts(models.Model):
     pkpost = models.BigAutoField(primary_key=True)
     fkboard = models.ForeignKey(Boards, models.DO_NOTHING, db_column='fkboard', blank=True, null=True)
-    description = models.TextField(db_collation='utf16_unicode_ci', blank=True, null=True)
-    fkuser = models.ForeignKey('Users', models.DO_NOTHING, db_column='fkuser', blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    fkuser = models.BigIntegerField(blank=True, null=True)
     datetime = models.CharField(max_length=20, db_collation='utf16_unicode_ci', blank=True, null=True)
     status = models.IntegerField(blank=True, null=True)
 
@@ -377,15 +325,12 @@ class Posts(models.Model):
         managed = False
         db_table = 'posts'
 
-    def __str__(self):
-        return f"Post {self.pkpost} by {self.fkuser.username}: {self.description}"
-
 
 class Purchase(models.Model):
     pkpurchase = models.BigAutoField(primary_key=True)
     fkbundle = models.ForeignKey(PointsBundle, models.DO_NOTHING, db_column='fkbundle', blank=True, null=True)
     fkuser = models.ForeignKey('Users', models.DO_NOTHING, db_column='fkuser', blank=True, null=True)
-    datetime = models.DateTimeField(blank=True, null=True)
+    datetime = models.CharField(max_length=50, blank=True, null=True)
     amount = models.PositiveIntegerField(blank=True, null=True)
 
     class Meta:
@@ -433,7 +378,7 @@ class Users(models.Model):
     gender_preference = models.IntegerField(blank=True, null=True)
     distancethreshold = models.CharField(db_column='distanceThreshold', max_length=255, db_collation='utf16_unicode_ci', blank=True, null=True)  # Field name made lowercase.
     role_id = models.IntegerField()
-    # audio_call_step = models.IntegerField(blank=True, null=True)
+    audio_call_usage = models.IntegerField(blank=True, null=True)
     age_verified = models.IntegerField(blank=True, null=True)
     dummy_account = models.IntegerField(blank=True, null=True)
     marital_status = models.IntegerField(blank=True, null=True)
@@ -461,25 +406,12 @@ class Users(models.Model):
     call_minutes = models.FloatField(blank=True, null=True)
     udid = models.CharField(max_length=128, db_collation='utf16_unicode_ci')
     push_token = models.CharField(max_length=255, db_collation='utf16_unicode_ci', blank=True, null=True)
-    # pushkittoken = models.CharField(max_length=255, db_collation='utf16_unicode_ci', blank=True, null=True)
+    amazonjoinstatus = models.IntegerField(blank=True, null=True)
     resetpasswordcode = models.CharField(max_length=45, db_collation='utf16_unicode_ci', blank=True, null=True)
-
-    
-    
-    
-    def check_password(self, password):
-        return check_password(password, self.password)
-
-    def get_password(self):
-        return "*****"  # or any other placeholder you want to display
 
     class Meta:
         managed = False
         db_table = 'users'
-
-    def __str__(self):
-        return self.name
-
 
 
 class ViewedProfile(models.Model):
@@ -493,17 +425,3 @@ class ViewedProfile(models.Model):
     class Meta:
         managed = False
         db_table = 'viewed_profile'
-
-
-class ViewPurchases(models.Model):
-    bundle_name = models.CharField(max_length=255, blank=True, null=True)
-    price = models.PositiveIntegerField(blank=True, null=True)
-    name = models.CharField(max_length=255, blank=True, null=True)
-    datetime = models.DateField(max_length=50, blank=True, null=True)
-    amount = models.PositiveIntegerField(blank=True, null=True)
-    pkpurchase = models.AutoField(primary_key=True)
-    fkuser = models.BigIntegerField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'view_purchases'

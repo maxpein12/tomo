@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="/static/css/pricing.css">
+    <link rel="stylesheet" href="/static/css/purchasehistory.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -34,11 +34,11 @@
                 <img src="https://cdn.icon-icons.com/icons2/2596/PNG/512/grid_four_icon_155315.png" class="menu-icon" alt="Dashboard Icon">
                 Posts</a>
             </li>
-            <li><a href="{% url 'Pricing' %}" class="menu-item active">
+            <li><a href="{% url 'Pricing' %}" class="menu-item">
                 <img src="https://cdn-icons-png.flaticon.com/512/1039/1039714.png" class="menu-icon" alt="Dashboard Icon">
                 Cart Information</a>
             </li>
-            <li><a href="{% url 'PurchaseHistory' %}" class="menu-item ">
+            <li><a href="{% url 'PurchaseHistory' %}" class="menu-item active">
                 <img src="https://www.svgrepo.com/show/335104/list-checkmark.svg" class="menu-icon" alt="Dashboard Icon">
                 Purchase History</a>
             </li>
@@ -82,92 +82,38 @@
         </header>
         <div class="main-body">
             <section class="deals-details">
-                <h2>Pricing</h2>
+                <h2>Purchase History</h2>
                 
                 <table class="table table-striped table-bordered">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Price</th>
-                            <th>Title</th>
-                            <th>Detail</th>
-                            <th>Edit</th>
+                            <th>Product Name</th>
+                            <th>Username</th>
+                            <th>Quantity</th>
+                            
                             
                         </tr>
                     </thead>
                     <tbody>
-                        {% for price in prices %}
+                    {% for purchase in purchases %}
                         <tr>
-                            <td>{{ price.pkpoint_bundle }}</td>
-                            <td>{{ price.price }}</td>
-                            <td>{{ price.name }}</td>
-                            <td>{{ price.description }}</td>
-                            <td>
-                                <a href="#edit-modal-{{ price.pkpoint_bundle }}" data-toggle="modal">Edit</a>
-                            </td>
-                            
+                            <td>{{ purchase.bundle_name}}</td>
+                            <td>{{ purchase.name}}</td>
+                            <td>{{ purchase.amount}}</td>
+                           
                         </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="6">No Items found.</td>
-                        </tr>
-                        {% endfor %}
+                    {% endfor %}       
+
                     </tbody>
+                            
+                        <!-- Repeat this for other products -->
                 </table>
-            
-                {% for price in prices %}
-                <div class="modal fade" id="edit-modal-{{ price.pkpoint_bundle }}" tabindex="-1" role="dialog" aria-labelledby="edit-modal-label-{{ price.pkpoint_bundle }}" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="edit-modal-label-{{ price.pkpoint_bundle }}">Edit</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <form method="post" action="{% url 'edit_points_bundle' price.pkpoint_bundle %}">
-                                    {% csrf_token %}
-                                    <div class="form-group">
-                                        <label for="price">Price:</label>
-                                        <input type="text" class="form-control" id="price" name="price" value="{{ price.price }}">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="name">Name:</label>
-                                        <input type="text" class="form-control" id="name" name="name" value="{{ price.name }}">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="description">Description:</label>
-                                        <input type="text" class="form-control" id="description" name="description" value="{{ price.description }}">
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">Save</button>
-                                </form>
-                                <script>
-                                    console.log("Form submitted");
-                                </script>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
             </section>
-            
-            <script>
-                $(document).ready(function() {
-                    console.log("Document ready");
-                    $(".btn-primary").on("click", function() {
-                        console.log("Button clicked");
-                        var modalId = $(this).data("target");
-                        console.log("Modal ID: " + modalId);
-                        $(modalId).modal("show");
-                    });
-                });
-            </script>
         </div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" ></script>
-    <script src="/static/js/pricing.js"></script>
+    <script src="/static/js/purchasehistory.js"></script>
 </body>
 
 </html>

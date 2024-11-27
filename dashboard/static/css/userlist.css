@@ -412,3 +412,31 @@ body {
   .filter-white{
     filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg) brightness(102%) contrast(102%);
 }
+
+.paginator {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.paginator a {
+    text-decoration: none;
+    color: #337ab7;
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin: 0 5px;
+}
+
+.paginator a:hover {
+    background-color: #f9f9f9;
+    border-color: #ccc;
+}
+
+.paginator span {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin: 0 5px;
+    background-color: #337ab7;
+    color: #fff;
+}

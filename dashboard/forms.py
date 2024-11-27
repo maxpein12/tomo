@@ -1,6 +1,6 @@
 from django import forms
 from .models import Client
-from .models import Users
+from .models import Users, PointsBundle
 
 from .models import Posts
 
@@ -45,6 +45,12 @@ class UserForm(forms.ModelForm):
             if new_password != confirm_new_password:
                 self.add_error('confirm_new_password', "New password and confirm new password do not match.")
         return cleaned_data
+    
+
+class PointsBundleForm(forms.ModelForm):
+    class Meta:
+        model = PointsBundle
+        fields = ('price', 'name', 'description')
     
 
 

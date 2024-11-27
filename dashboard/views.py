@@ -1,6 +1,6 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from .models import Client, Team, Product, Orders, Messages, Posts
-from .models import Users
+from .models import Users, BlockUser, ViewPurchases, PointsBundle, MessageTemplates
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
@@ -8,7 +8,7 @@ import datetime
 from django.contrib.auth import *
 import hashlib
 from dashboard.auth_backend import SHA2Backend
-from .forms import UserForm
+from .forms import UserForm, PointsBundleForm
 from django.contrib.auth.hashers import make_password
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import View
@@ -16,96 +16,119 @@ from django.http import HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 # from .forms import PostForm
 import os
+import urllib.parse
+from django.http import JsonResponse
+
 
 
 
 
 now = datetime.datetime.now()
 
-def index(request):
-    orders = Orders.objects.all().order_by('-date')
-    products = Product.objects.all()
-    order_count = Orders.objects.count()
+def SalesChart(request):
+    year = request.GET.get('year', now.year)
+    orders = ViewPurchases.objects.all().order_by('-datetime')
 
-    orders_january = Orders.objects.filter(date__month='1', date__year = now.year).aggregate(total=Sum('price'))
-    orders_february = Orders.objects.filter(date__month='2', date__year=now.year).aggregate(total=Sum('price'))
-    orders_march = Orders.objects.filter(date__month='3', date__year=now.year).aggregate(total=Sum('price'))
-    orders_april = Orders.objects.filter(date__month='4', date__year=now.year).aggregate(total=Sum('price'))
-    orders_may = Orders.objects.filter(date__month='5', date__year=now.year).aggregate(total=Sum('price'))
-    orders_june = Orders.objects.filter(date__month='6', date__year=now.year).aggregate(total=Sum('price'))
-    orders_july = Orders.objects.filter(date__month='7', date__year=now.year).aggregate(total=Sum('price'))
-    orders_august = Orders.objects.filter(date__month='8', date__year=now.year).aggregate(total=Sum('price'))
-    orders_september = Orders.objects.filter(date__month='9', date__year=now.year).aggregate(total=Sum('price'))
-    orders_october = Orders.objects.filter(date__month='10', date__year=now.year).aggregate(total=Sum('price'))
-    orders_november = Orders.objects.filter(date__month='11', date__year=now.year).aggregate(total=Sum('price'))
-    orders_december = Orders.objects.filter(date__month='12', date__year=now.year).aggregate(total=Sum('price'))
+    orders_january = ViewPurchases.objects.filter(datetime__month='1', datetime__year=year).aggregate(total=Sum('price'))
+    orders_february = ViewPurchases.objects.filter(datetime__month='2', datetime__year=year).aggregate(total=Sum('price'))
+    orders_march = ViewPurchases.objects.filter(datetime__month='3', datetime__year=year).aggregate(total=Sum('price'))
+    orders_april = ViewPurchases.objects.filter(datetime__month='4', datetime__year=year).aggregate(total=Sum('price'))
+    orders_may = ViewPurchases.objects.filter(datetime__month='5', datetime__year=year).aggregate(total=Sum('price'))
+    orders_june = ViewPurchases.objects.filter(datetime__month='6', datetime__year=year).aggregate(total=Sum('price'))
+    orders_july = ViewPurchases.objects.filter(datetime__month='7', datetime__year=year).aggregate(total=Sum('price'))
+    orders_august = ViewPurchases.objects.filter(datetime__month='8', datetime__year=year).aggregate(total=Sum('price'))
+    orders_september = ViewPurchases.objects.filter(datetime__month='9', datetime__year=year).aggregate(total=Sum('price'))
+    orders_october = ViewPurchases.objects.filter(datetime__month='10', datetime__year=year).aggregate(total=Sum('price'))
+    orders_november = ViewPurchases.objects.filter(datetime__month='11', datetime__year=year).aggregate(total=Sum('price'))
+    orders_december = ViewPurchases.objects.filter(datetime__month='12', datetime__year=year).aggregate(total=Sum('price'))
 
-    order_pending = Orders.objects.filter(is_completed='0', date__year=now.year).count()
-    order_delivered = Orders.objects.filter(is_completed='1', date__year=now.year).count()
-    total_sales = Orders.objects.filter(is_completed='1', date__year=now.year).aggregate(total=Sum('price'))
+    return render(request, 'saleschart.html', {
+        'orders': orders,
+        'orders_january': orders_january,
+        'orders_february': orders_february,
+        'orders_march': orders_march,
+        'orders_april': orders_april,
+        'orders_may': orders_may,
+        'orders_june': orders_june,
+        'orders_july': orders_july,
+        'orders_august': orders_august,
+        'orders_september': orders_september,
+        'orders_october': orders_october,
+        'orders_november': orders_november,
+        'orders_december': orders_december,
+        'year': year
+    })
 
-    user_count = Client.objects.count()
-    return render(request, 'index.html', {'user_count': user_count, 'order_count': order_count, 'order_pending': order_pending, 'orders': orders, 'orders_november': orders_november, 'orders_january': orders_january, 'orders_february': orders_february, 'orders_march': orders_march, 'orders_april': orders_april, 'orders_may': orders_may, 'orders_june': orders_june, 'orders_july': orders_july, 'orders_august': orders_august, 'orders_september': orders_september, 'orders_october': orders_october, 'orders_december': orders_december, 'products': products, 'total_sales': total_sales, 'order_delivered': order_delivered})  
 
 
 
 
+from django.core.cache import cache
 
-def favorites(request):
-    products = Product.objects.all()
-    return render(request, 'favorites.html', {'products': products})
+from django.core.paginator import Paginator
+
+def SalesReport(request):
+    cache_key = 'view_purchases_data'
+    view_purchases_data = cache.get(cache_key)
+
+    if view_purchases_data is None:
+        view_purchases = ViewPurchases.objects.all().order_by('-datetime')
+        view_purchases_data = []
+
+        for view_purchase in view_purchases:
+            user = Users.objects.get(pk=view_purchase.fkuser)
+            view_purchase_data = {
+                'pkpurchase': view_purchase.pk,
+                'datetime': view_purchase.datetime,
+                'product_name': view_purchase.bundle_name,
+                'name': view_purchase.name,
+                'email': user.email,
+            }
+            view_purchases_data.append(view_purchase_data)
+
+        cache.set(cache_key, view_purchases_data, 60 * 60)  # Cache for 1 hour
+
+    paginator = Paginator(view_purchases_data, 10)  # 10 items per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'salesreport.html', {'view_purchases': page_obj})
 
 
-def inbox(request):
-    messages = Messages.objects.all().order_by('-timestamp')
+def MessageTemplate(request):
+    messages = MessageTemplates.objects.all().order_by('-date_created')
+    decoded_messages = [{'pk': message.pkmessage_template, 'value': urllib.parse.unquote(message.value)} for message in messages]
     
-    return render(request, 'inbox.html', {'messages': messages})
+    return render(request, 'messagetemplate.html', {'messages': decoded_messages})
 
 
-def orders(request):
-    orders = Orders.objects.all().order_by('-date')
+def PurchaseHistory(request):
+    purchases = ViewPurchases.objects.all().order_by('-datetime')
+    return render(request, 'purchasehistory.html', {'purchases': purchases})
+
+
+
+
+
+def ReportList(request): 
+    reports = BlockUser.objects.filter(flags__in=[2, 3, 5]).order_by('-datetime')
+    return render(request, 'reportlist.html', {'reports': reports})
+
+
+def Pricing(request):
+    prices = PointsBundle.objects.all().order_by('-pkpoint_bundle')
+    return render(request, 'pricing.html', {'prices': prices})
+
+def edit_points_bundle(request, pk):
+    points_bundle = PointsBundle.objects.get(pk=pk)
     if request.method == 'POST':
-        fromdate = request.POST.get('fromdate', '')
-        todate = request.POST.get('todate', '')
-        name = request.POST.get('name', '')
-        status = request.POST.get('status', '')
-
-        filters = {}
-
-        if fromdate and todate:
-            filters['date__range'] = [fromdate, todate]
-
-        if name:
-            filters['name'] = name
-
-        if status and status != 'all':
-            if status == 'completed':
-                status = True
-            elif status == 'processing':
-                status = False
-            
-            filters['is_completed'] = status
-
-        searchresult = Orders.objects.filter(**filters).order_by('-date')
-        return render(request, 'orderlist.html', {'orders': searchresult})
-    elif request.method == 'GET':
-        orders = Orders.objects.all().order_by('-date')
-        return render(request, 'orderlist.html', {'orders': orders})
+        form = PointsBundleForm(request.POST, instance=points_bundle)
+        if form.is_valid():
+            form.save()
+            return redirect('points_bundles')  # redirect to the points bundles page
     else:
-        orders = Orders.objects.all().order_by('-date')
-        return render(request, 'orderlist.html', {'orders': orders})
-
-
-
-
-
-def stock(request): 
-    products = Product.objects.all()
-    return render(request, 'productstock.html', {'products': products})
-
-
-def pricing(request):
-    return render(request, 'pricing.html')
+        form = PointsBundleForm(instance=points_bundle)
+    return render(request, 'edit_points_bundle.html', {'form': form})
 
 
 def calendar(request):
@@ -118,9 +141,11 @@ def todo(request):
 
 from django.core.cache import cache
 
-def contact(request):
+def UserList(request):
     # Check if the contact data is cached
+    total_users = Users.objects.count()
     contact_data = cache.get('contact_data')
+    sort = request.GET.get('sort')
 
     if contact_data is None:
         # If the contact data is not cached, retrieve it from the database
@@ -135,15 +160,22 @@ def contact(request):
             except:
                 pass
             users_with_post_count.append({'user': user, 'post_count': post_count, 'profile_photo': profile_photo})
-
+            
         # Cache the contact data for 1 hour
         cache.set('contact_data', users_with_post_count, 60 * 60)
     else:
         # If the contact data is cached, use it
         users_with_post_count = contact_data
 
+    # Sort the contact data based on the selected option
+    if sort == 'newest':
+        users_with_post_count = sorted(users_with_post_count, key=lambda x: x['user'].pk, reverse=True)
+    
+    elif sort == 'oldest':
+        users_with_post_count = sorted(users_with_post_count, key=lambda x: x['user'].pk)
+    
     # Render the contact page with the contact data
-    return render(request, 'contact.html', {'users_with_post_count': users_with_post_count})
+    return render(request, 'userlist.html', {'users_with_post_count': users_with_post_count, 'total_users': total_users})
    
 
 
@@ -156,10 +188,10 @@ def ui(request):
     return render(request, 'ui.html')
 
 
-def team(request):
+def AdminList(request):
     teams = Team.objects.all()
     users = Users.objects.all()
-    return render(request, 'team.html', {'users': users})
+    return render(request, 'adminlist.html', {'users': users})
 
 
 
@@ -229,7 +261,7 @@ def logoutpage(request):
 
 
 
-def test(request, pkuser):
+def UserProfile(request, pkuser):
     user = get_object_or_404(Users, pk=pkuser)
     form = UserForm(instance=user, include_password_fields=True)
 
@@ -260,12 +292,12 @@ def test(request, pkuser):
 
     posts = Posts.objects.filter(fkuser=user)
 
-    return render(request, 'test.html', {'form': form, 'user': user, 'posts': posts, 'pkuser': pkuser})
+    return render(request, 'userprofile.html', {'form': form, 'user': user, 'posts': posts, 'pkuser': pkuser})
 
 
 from django.core.cache import cache
 
-def products(request):
+def PostsList(request):
     # Check if the product data is cached
     product_data = cache.get('product_data')
 
@@ -279,7 +311,7 @@ def products(request):
         # If the product data is cached, use it
         posts = product_data
 
-    return render(request, 'products.html', {'posts': posts})
+    return render(request, 'postslist.html', {'posts': posts})
 
 # def update_user(request, pkuser):
 #     user = Users.objects.get(pk=pkuser)
@@ -311,3 +343,24 @@ class DeletePostView(LoginRequiredMixin, View):
 #             return redirect('home')  # Replace 'home' with the URL of the home page
 #         return HttpResponse('Invalid form data', status=400)
 
+def update_total_users_count(request):
+    filter_value = request.POST.get('filter')
+    if filter_value == 'all':
+        total_users = Users.objects.all().count()
+    elif filter_value == 'online':
+        total_users = Users.objects.filter(status=1).count()
+    elif filter_value == 'offline':
+        total_users = Users.objects.filter(status=0).count()
+    elif filter_value == 'unregistered':
+        total_users = Users.objects.filter(age_verified=0).count()
+    elif filter_value == 'checking':
+        total_users = Users.objects.filter(age_verified=2).count()
+    elif filter_value == 'It was not accepted due to a comprehensive judgement.':
+        total_users = Users.objects.filter(age_verified=3).count()
+    elif filter_value == 'verified':
+        total_users = Users.objects.filter(age_verified=1).count()
+    elif filter_value == 'newest':
+        total_users = Users.objects.all().order_by('-pk').count()
+    elif filter_value == 'oldest':
+        total_users = Users.objects.all().order_by('pk').count()
+    return JsonResponse({'total_users': total_users})

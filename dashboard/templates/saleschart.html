@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark" >
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="/static/css/saleschart.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" >
+        <div class="sidebar-header">
+            <h2>Tomodachi</h2>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="{% url 'AdminList' %}" class="menu-item ">
+                <img src="https://cdn.creazilla.com/icons/3251108/person-icon-lg.png" class="menu-icon" alt="Dashboard Icon">
+                Team</a>
+            </li>
+            <li><a href="{% url 'MessageTemplate' %}" class="menu-item ">
+                <img src="https://cdn.icon-icons.com/icons2/1919/PNG/512/twospeechbubbles_122034.png" class="menu-icon" alt="Dashboard Icon">
+                Message Template</a>
+            </li>
+            <li><a href="{% url 'UserList' %}" class="menu-item ">
+                <img src="https://cdn-icons-png.flaticon.com/128/1250/1250592.png" class="menu-icon" alt="Dashboard Icon">
+                Users</a>
+            </li>
+            <li><a href="{% url 'PostsList' %}" class="menu-item">
+                <img src="https://cdn.icon-icons.com/icons2/2596/PNG/512/grid_four_icon_155315.png" class="menu-icon" alt="Dashboard Icon">
+                Posts</a>
+            </li>
+            <li><a href="{% url 'Pricing' %}" class="menu-item">
+                <img src="https://cdn-icons-png.flaticon.com/512/1039/1039714.png" class="menu-icon" alt="Dashboard Icon">
+                Cart Information</a>
+            </li>
+            <li><a href="{% url 'PurchaseHistory' %}" class="menu-item">
+                <img src="https://www.svgrepo.com/show/335104/list-checkmark.svg" class="menu-icon" alt="Dashboard Icon">
+                Purchase History</a>
+            </li>
+            <li><a href="{% url 'ReportList' %}" class="menu-item">
+                <img src="https://static.thenounproject.com/png/602072-200.png" class="menu-icon" alt="Dashboard Icon">
+                Report</a>
+            </li>
+            <li><a href="{% url 'SalesReport' %}" class="menu-item ">
+                <img src="https://www.svgrepo.com/show/335104/list-checkmark.svg" class="menu-icon" alt="Dashboard Icon">
+                Sales Report</a>
+            </li>
+            <li><a href="{% url 'SalesChart' %}" class="menu-item active">
+                <img src="https://cdn0.iconfinder.com/data/icons/octicons/1024/dashboard-512.png" class="menu-icon" alt="Dashboard Icon">
+                Sales Chart</a>
+            </li>
+           
+            <li><a href="{% url 'logout' %}" class="menu-item">
+                <img src="https://cdn-icons-png.flaticon.com/512/157/157316.png" class="menu-icon" alt="Dashboard Icon">
+                Logout</a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Dashboard Content -->
+    <main class="main-content" data-bs-theme="dark">
+    
+
+        <header class="dashboard-header">
+            <div class="menu-button" id="menuButton">
+                <img src="https://www.svgrepo.com/show/509382/menu.svg" alt="Menu Icon" width="24" height="24" class="filter-white">
+            </div>
+            <div class="search-bar">
+                <input type="text" placeholder="Search">
+            </div>
+            <div class="header-options">
+                <span class="notification-icon">🔔</span>
+        
+                <!-- Flag Language Dropdown -->
+                <div class="dropdown">
+                    <span class="flag-icon dropdown-toggle">🇬🇧</span>
+                    <div class="dropdown-menu">
+                        <a href="#" data-lang="English">English</a>
+                        <a href="#" data-lang="Tagalog">Tagalog</a>
+                        <a href="#" data-lang="Japanese">Japanese</a>
+                        <a href="#" data-lang="Add">Add More Languages...</a>
+                    </div>
+                </div>
+        
+                <!-- Profile Dropdown -->
+                <div class="dropdown">
+                    <img src="https://static.vecteezy.com/system/resources/thumbnails/019/900/322/small/happy-young-cute-illustration-face-profile-png.png" alt="User Avatar" class="user-avatar dropdown-toggle">
+                    <span class="user-info dropdown-toggle">{{ user.username }}</span>
+                    <div class="dropdown-menu">
+                        <a href="/admin/auth/user/{{ user.id }}/change/" target="_blank" >Manage Account</a>
+                        <a href="/admin/auth/user/{{ user.id }}/password/" target="_blank">Change Password</a>
+                        <a href="#">Activity Log</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <div class="main-body">
+            <div>
+                <h2>Sales Chart</h2>
+            </div>    <!-- Dashboard Metrics -->
+          
+            <!-- Sales Details Chart -->
+            <section class="chart-section">
+                <div>
+                    <h2>Sales details</h2>
+                </div>
+                <canvas id="salesChart" style="width: 100%; height: 500px;" ></canvas>
+                
+                <script>
+                    
+                    var jan = "{{ orders_january.total }}" === 'None' ? 0 : "{{ orders_january.total }}";
+                    var feb = "{{ orders_february.total }}" === 'None' ? 0 : "{{ orders_february.total }}";
+                    var mar = "{{ orders_march.total }}" === 'None' ? 0 : "{{ orders_march.total }}";
+                    var apr ="{{ orders_april.total }}" === 'None' ? 0 : "{{ orders_april.total }}";
+                    var may = "{{ orders_may.total }}" === 'None' ? 0 : "{{ orders_may.total }}";
+                    var jun = "{{ orders_june.total }}" === 'None' ? 0 : "{{ orders_june.total }}";
+                    var jul = "{{ orders_july.total }}" === 'None' ? 0 : "{{ orders_july.total }}";
+                    var aug = "{{ orders_august.total }}" === 'None' ? 0 : "{{ orders_august.total }}";
+                    var sep = "{{ orders_september.total }}" === 'None' ? 0 : "{{ orders_september.total }}";
+                    var oct = "{{ orders_october.total }}" === 'None' ? 0 : "{{ orders_october.total }}";
+                    var nov = "{{ orders_november.total }}" === 'None' ? 0 : "{{ orders_november.total }}";
+                    var dec = "{{ orders_december.total }}" === 'None' ? 0 : "{{ orders_december.total }}";
+
+                
+                </script>
+
+            </section>
+
+            
+            <!-- Deals Details Table -->
+           
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/saleschart.js"></script>
+    <script>
+        Chart.defaults.global.defaultFontColor = "#fff";
+    </script>
+</body>
+
+</html>
