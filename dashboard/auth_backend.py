@@ -1,20 +1,14 @@
-# auth_backend.py
-import hashlib
-from django.contrib.auth.backends import ModelBackend
-from django.contrib.auth.models import User
+from django.contrib.auth.hashers import BasePasswordHasher
+from hashlib import sha256
 
-class SHA2Backend(ModelBackend):
-    def authenticate(self, request, username=None, password=None):
-        try:
-            user = User.objects.get(username=username)
-        except User.DoesNotExist:
-            return None
+class SHA2PasswordHasher(BasePasswordHasher):
+    algorithm = "sha2"
 
-        # Hash the provided password using SHA2
-        hashed_password = hashlib.sha256(password.encode()).hexdigest()
+    def encode(self, password, salt):
+        hash = sha256((password + salt).encode()).hexdigest()
+        return f"sha2${salt}${hash}"
 
-        # Compare the hashed password with the one in the database
-        if hashed_password == user.password:
-            return user
-
-        return None
+    def verify(self, password, encoded):
+        algorithm, salt, hash = encoded.split("$")
+        encoded_2 = self.encode(password, salt)
+        return encoded == encoded_2

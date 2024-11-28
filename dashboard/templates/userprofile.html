@@ -225,38 +225,43 @@
             </section>
 
 
-            <!-- Chat Section -->
-            <section class="chart-section">
-                <div>
-                    <h2>Chat</h2>
-                </div>
-                <!-- <canvas id="" style="width: 100%; height: 500px;" ></canvas> -->
-                    <div class="grid-container">
-                        <div  class="grid-item1" style="display: flex; flex-direction: column;">
-                            <input type="search" value="" placeholder="Username Search">
-                            <button>Chat Official</button>
-                            <button>Tick</button>
-                            <button>gin</button>
-                            <button style="margin-top: auto;">Send to all users</button>
-                        </div>
-                      
-                        <div class="grid-item2" style="margin-top: -50px;">
-                            <div style="float: inline-end;">
-                                <select name="" id="" value="Greetings Template"  style="border: none; background-color: transparent;">
-                                    <option value="greetings">Greetings Template</option>
-                                    <option value="greetings">Greetings Template</option>
-                                    <option value="greetings">Greetings Template</option>
-                                </select>
-                           
-                                <button>Template</button>
-                              </div>
-                            <textarea name="" id="" placeholder="body" style="float: inline-end;"></textarea>
-                            <div style="float: inline-end;">
-                            <button>Send</button>
-                        </div>
-                        </div>
-                    </div>
-            </section>
+ <!-- Chat Section -->
+ <section class="chart-section">
+    <div class="chat-container" id="chat-section" data-conversation-user="{{ conversation_user }}">
+      <h2>Chat</h2>
+      <div class="grid-container">
+        <div class="user-list-container">
+          <input type="search" value="" placeholder="Username Search">
+          <ul id="user-list">
+            {% for user in chat_list %}
+              <li><a href="?conversation_user={{ user.pk }}#conversation-display">{{ user.name }} <span>({{ user.msg_count }})</span></a></li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div class="conversation-and-input-container">
+          <div class="conversation-container">
+            <div id="conversation-display" class="chatbox">
+              {% if conversation_user %}
+                <ul>
+                  {% for message in messages %}
+                    <li class="message">
+                      <div class="bubble {% if message.msg_from == user %}you{% endif %}">
+                        <span class="message-text">{{ message.data }}</span>
+                      </div>
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+          </div>
+          <div class="input-container">
+            <textarea name="" id="" placeholder="Type a message..."></textarea>
+            <button>Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
 
             <!-- Post Section -->
@@ -284,7 +289,7 @@
                             
                             <a href="http://52.221.236.229:8069/media/board_photos/{{ post.pkpost }}/image.jpg" _target="_blank"><img src="http://52.221.236.229:8069/media/board_photos/{{ post.pkpost }}/image.jpg" style="width: 200px; height: 100px;" alt=""></a></td>
                         <td>{{ post.datetime }}</td>
-                        <td>{{ post.status }}</td>
+                        <td>{% if post.status == 1 %}Public{% else %}Private{% endif %}</td>
                         <td>
             <form method="POST" action="{% url 'delete_post' post.pkpost %}">
                 {% csrf_token %}
@@ -301,7 +306,7 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/static/js/saleschart.js"></script>
+    <script src="/static/js/userprofile.js"></script>
     
     <style>
         button{

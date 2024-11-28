@@ -29,7 +29,7 @@ class UserForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         include_password_fields = kwargs.pop('include_password_fields', True)
         super(UserForm, self).__init__(*args, **kwargs)
-        self.fields['gender'].widget = forms.Select(choices=[(1, 'Woman'), (2, 'Man')])
+        self.fields['gender'].widget = forms.Select(choices=[(1, 'Woman'), (0, 'Man')])
         self.fields['age_verified'].widget = forms.Select(choices=[(0, 'Unregistered'), (1, 'Reception Complete'), (2, 'Checking'), (3, 'It was not accepted due to a comprehensive judgement.')])
 
         if not include_password_fields:

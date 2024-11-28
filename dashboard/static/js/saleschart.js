@@ -111,4 +111,5 @@ languageLinks.forEach(link => {
     });
 });
 
+
 // Update the chart when the year filter changes

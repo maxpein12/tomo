@@ -9,7 +9,7 @@ from .views import DeletePostView
 
 
 urlpatterns = [
-    path('', views.AdminList, name='AdminList'),
+    path('', views.UserList, name='UserList'),
     path('SalesChart/', views.SalesChart, name='SalesChart'),
     path('PostsList/', views.PostsList, name='PostsList'),
     path('SalesReport/', views.SalesReport, name='SalesReport'),
@@ -26,6 +26,7 @@ urlpatterns = [
     path('delete_post/<int:pkpost>/', DeletePostView.as_view(), name='delete_post'),
     path('edit-points-bundle/<int:pk>/', views.edit_points_bundle, name='edit_points_bundle'),
     path('update_total_users_count/', views.update_total_users_count, name='update_total_users_count'),
-    #  path('new_post/', NewPostView.as_view(), name='new_post'),
+    
+
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

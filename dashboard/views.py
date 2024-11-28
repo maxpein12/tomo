@@ -7,7 +7,7 @@ from django.db.models import Sum
 import datetime
 from django.contrib.auth import *
 import hashlib
-from dashboard.auth_backend import SHA2Backend
+from dashboard.auth_backend import SHA2PasswordHasher
 from .forms import UserForm, PointsBundleForm
 from django.contrib.auth.hashers import make_password
 from django.shortcuts import get_object_or_404, redirect
@@ -18,6 +18,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 import os
 import urllib.parse
 from django.http import JsonResponse
+from django.db.models import Q, Count
 
 
 
@@ -88,11 +89,11 @@ def SalesReport(request):
 
         cache.set(cache_key, view_purchases_data, 60 * 60)  # Cache for 1 hour
 
-    paginator = Paginator(view_purchases_data, 10)  # 10 items per page
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    # paginator = Paginator(view_purchases_data, 10)  # 10 items per page
+    # page_number = request.GET.get('page')
+    # page_obj = paginator.get_page(page_number)
 
-    return render(request, 'salesreport.html', {'view_purchases': page_obj})
+    return render(request, 'salesreport.html', {'view_purchases': view_purchases_data})
 
 
 def MessageTemplate(request):
@@ -174,6 +175,7 @@ def UserList(request):
     elif sort == 'oldest':
         users_with_post_count = sorted(users_with_post_count, key=lambda x: x['user'].pk)
     
+   
     # Render the contact page with the contact data
     return render(request, 'userlist.html', {'users_with_post_count': users_with_post_count, 'total_users': total_users})
    
@@ -265,6 +267,18 @@ def UserProfile(request, pkuser):
     user = get_object_or_404(Users, pk=pkuser)
     form = UserForm(instance=user, include_password_fields=True)
 
+    # Add the chat list logic here
+    chat_users = Users.objects.filter(
+        Q(pk__in=Messages.objects.filter(msg_to=user).values('msg_from')) |
+        Q(pk__in=Messages.objects.filter(msg_from=user).values('msg_to'))
+    ).distinct()
+
+    chat_list = chat_users.annotate(
+        msg_count=Count('messages', filter=Q(messages__msg_to=user, messages__read=0) | Q(messages__msg_from=user, messages__read=0))
+    ).values('pk', 'nickname', 'name', 'msg_count')
+
+    
+
     if request.method == 'POST':
         if 'add_points' in request.POST:
             point_type = request.POST.get('point_type')
@@ -290,9 +304,25 @@ def UserProfile(request, pkuser):
                 user.mail_count = form.cleaned_data.get('mail_count')
                 user.save()
 
+    # Add the chat display logic here
+    conversation_user_id = request.GET.get('conversation_user')
+    if conversation_user_id:
+        conversation_user = get_object_or_404(Users, pk=conversation_user_id)
+        messages = Messages.objects.filter(Q(msg_from=user, msg_to=conversation_user) | Q(msg_from=conversation_user, msg_to=user)).order_by('datetime')
+    else:
+        messages = []
+
     posts = Posts.objects.filter(fkuser=user)
 
-    return render(request, 'userprofile.html', {'form': form, 'user': user, 'posts': posts, 'pkuser': pkuser})
+    return render(request, 'userprofile.html', {
+        'form': form,
+        'user': user,
+        'posts': posts,
+        'pkuser': pkuser,
+        'chat_list': chat_list,
+        'messages': messages,
+        'conversation_user': conversation_user if conversation_user_id else None
+    })
 
 
 from django.core.cache import cache
@@ -364,3 +394,7 @@ def update_total_users_count(request):
     elif filter_value == 'oldest':
         total_users = Users.objects.all().order_by('pk').count()
     return JsonResponse({'total_users': total_users})
+
+
+    
+
