@@ -148,7 +148,6 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 AUTHENTICATION_BACKENDS = [
-    'dashboard.auth_backend.SHA2Backend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 

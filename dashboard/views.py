@@ -26,6 +26,7 @@ from django.db.models import Q, Count
 
 now = datetime.datetime.now()
 
+
 def SalesChart(request):
     year = request.GET.get('year', now.year)
     orders = ViewPurchases.objects.all().order_by('-datetime')
@@ -132,12 +133,6 @@ def edit_points_bundle(request, pk):
     return render(request, 'edit_points_bundle.html', {'form': form})
 
 
-def calendar(request):
-    return render(request, 'calendar.html')
-
-
-def todo(request):
-    return render(request, 'to-do.html')
 
 
 from django.core.cache import cache
@@ -181,13 +176,7 @@ def UserList(request):
    
 
 
-def invoice(request):
-    orders = Orders.objects.all().order_by('-date')
-    
-    return render(request, 'invoice.html', {'orders': orders})
 
-def ui(request):    
-    return render(request, 'ui.html')
 
 
 def AdminList(request):
@@ -197,8 +186,6 @@ def AdminList(request):
 
 
 
-def table(request):
-    return render(request, 'table.html')
 
 
 
@@ -238,19 +225,18 @@ def loginpage(request):
 
         try:
             user = Users.objects.get(email=email)
-            salt = user.salt  # assuming you have a 'salt' field in your Users model
-            hashed_password = hashlib.sha256((password + salt).encode()).hexdigest()
-            if hashed_password == user.password and user.type == 0:
-                # Login the user
-                login(request, user)
-                print("Login successful! Redirecting to index page...")
-                return redirect('/dashboard')
+            if user.check_password(password):
+                login(request, user)  # Log the user in
+                if 'next' in request.GET:
+                    return redirect(request.GET['next'])
+                else:
+                    return redirect('UserList')  # Redirect to the UserList page
             else:
-                print("Password is incorrect")
+                error_msg = 'Invalid username or password'
+                return render(request, 'login.html', {'error': error_msg})
         except Users.DoesNotExist:
-            print("Email does not exist")
-        error_msg = 'Invalid username or password'
-        return render(request, 'login.html', {'error': error_msg})
+            error_msg = 'Invalid username or password'
+            return render(request, 'login.html', {'error': error_msg})
     return render(request, 'login.html')
 
 
@@ -313,7 +299,7 @@ def UserProfile(request, pkuser):
         messages = []
 
     posts = Posts.objects.filter(fkuser=user)
-
+    
     return render(request, 'userprofile.html', {
         'form': form,
         'user': user,
@@ -343,16 +329,7 @@ def PostsList(request):
 
     return render(request, 'postslist.html', {'posts': posts})
 
-# def update_user(request, pkuser):
-#     user = Users.objects.get(pk=pkuser)
-#     if request.method == 'POST':
-#         form = UserForm(request.POST, instance=user)
-#         if form.is_valid():
-#             form.save()
-#             return render(request, 'test.html', {'user': user})
-#     else:
-#         form = UserForm(instance=user)
-#     return render(request, 'test.html', {'form': form})
+
 
 
 class DeletePostView(LoginRequiredMixin, View):
@@ -363,15 +340,7 @@ class DeletePostView(LoginRequiredMixin, View):
     
 
 
-# class NewPostView(LoginRequiredMixin, View):
-#     def post(self, request):
-#         form = PostForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             post = form.save(commit=False)
-#             post.fkuser = request.user
-#             post.save()
-#             return redirect('home')  # Replace 'home' with the URL of the home page
-#         return HttpResponse('Invalid form data', status=400)
+
 
 def update_total_users_count(request):
     filter_value = request.POST.get('filter')

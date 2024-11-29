@@ -1,7 +1,7 @@
 from django import forms
 from .models import Client
 from .models import Users, PointsBundle
-
+from datetime import datetime
 from .models import Posts
 
 # forms.py
@@ -21,7 +21,7 @@ class ImageForm(forms.ModelForm):
 class UserForm(forms.ModelForm):
     new_password = forms.CharField(widget=forms.PasswordInput(), required=False)
     confirm_new_password = forms.CharField(widget=forms.PasswordInput(), required=False)
-
+    age = forms.CharField(widget=forms.TextInput(attrs={'readonly': 'readonly'}))
     class Meta:
         model = Users
         fields = ('name', 'email', 'gender', 'status', 'age_verified', 'call_minutes', 'mail_count')
@@ -31,11 +31,19 @@ class UserForm(forms.ModelForm):
         super(UserForm, self).__init__(*args, **kwargs)
         self.fields['gender'].widget = forms.Select(choices=[(1, 'Woman'), (0, 'Man')])
         self.fields['age_verified'].widget = forms.Select(choices=[(0, 'Unregistered'), (1, 'Reception Complete'), (2, 'Checking'), (3, 'It was not accepted due to a comprehensive judgement.')])
-
+        if self.instance.dob:
+            self.fields['age'].initial = self.calculate_age(self.instance.dob)
         if not include_password_fields:
             self.fields['new_password'].widget = forms.HiddenInput()
             self.fields['confirm_new_password'].widget = forms.HiddenInput()
 
+
+
+    def calculate_age(self, dob):
+        today = datetime.today()
+        
+        age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+        return age
     def clean(self):
         cleaned_data = super(UserForm, self).clean()
         if self.fields['new_password'].widget != forms.HiddenInput():

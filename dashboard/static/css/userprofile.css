@@ -387,8 +387,12 @@ body {
 
 #user-list li a span {
     font-size: 14px;
-    color: red;
+    color: inherit;
     margin-left: 10px;
+}
+
+#user-list li a span.non-zero {
+    color: red;
 }
 
 #user-list li:hover {

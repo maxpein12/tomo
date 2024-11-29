@@ -463,6 +463,7 @@ class Users(models.Model):
     push_token = models.CharField(max_length=255, db_collation='utf16_unicode_ci', blank=True, null=True)
     # pushkittoken = models.CharField(max_length=255, db_collation='utf16_unicode_ci', blank=True, null=True)
     resetpasswordcode = models.CharField(max_length=45, db_collation='utf16_unicode_ci', blank=True, null=True)
+    # last_login = models.DateTimeField(blank=True, null=True)
 
     
     
