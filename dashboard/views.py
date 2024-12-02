@@ -27,10 +27,10 @@ from .models import Users, Match
 from datetime import timedelta
 import datetime
 from dateutil import parser
-from datetime import datetime as dt
+from datetime import datetime, timedelta
 
 
-now = datetime.datetime.now()
+now = datetime.now()
 
 # @login_required
 def SalesChart(request):
