@@ -1,11 +1,12 @@
 from django.shortcuts import redirect, render, get_object_or_404
-from .models import Client, Team, Product, Orders, Messages, Posts
+from .models import  Team, Messages, Posts
 from .models import Users, BlockUser, ViewPurchases, PointsBundle, MessageTemplates
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 import datetime
 from django.contrib.auth import *
+from .forms import MessageForm
 import hashlib
 from dashboard.auth_backend import SHA2PasswordHasher
 from .forms import UserForm, PointsBundleForm
@@ -19,14 +20,19 @@ import os
 import urllib.parse
 from django.http import JsonResponse
 from django.db.models import Q, Count
-
-
-
+# from django.contrib.auth.decorators import login_required
+from django.dispatch import receiver
+from django.db.models.signals import post_save
+from .models import Users, Match
+from datetime import timedelta
+import datetime
+from dateutil import parser
+from datetime import datetime as dt
 
 
 now = datetime.datetime.now()
 
-
+# @login_required
 def SalesChart(request):
     year = request.GET.get('year', now.year)
     orders = ViewPurchases.objects.all().order_by('-datetime')
@@ -68,7 +74,7 @@ def SalesChart(request):
 from django.core.cache import cache
 
 from django.core.paginator import Paginator
-
+# @login_required
 def SalesReport(request):
     cache_key = 'view_purchases_data'
     view_purchases_data = cache.get(cache_key)
@@ -96,14 +102,14 @@ def SalesReport(request):
 
     return render(request, 'salesreport.html', {'view_purchases': view_purchases_data})
 
-
+# @login_required
 def MessageTemplate(request):
     messages = MessageTemplates.objects.all().order_by('-date_created')
     decoded_messages = [{'pk': message.pkmessage_template, 'value': urllib.parse.unquote(message.value)} for message in messages]
     
     return render(request, 'messagetemplate.html', {'messages': decoded_messages})
 
-
+# @login_required
 def PurchaseHistory(request):
     purchases = ViewPurchases.objects.all().order_by('-datetime')
     return render(request, 'purchasehistory.html', {'purchases': purchases})
@@ -111,32 +117,41 @@ def PurchaseHistory(request):
 
 
 
-
+# @login_required
 def ReportList(request): 
     reports = BlockUser.objects.filter(flags__in=[2, 3, 5]).order_by('-datetime')
     return render(request, 'reportlist.html', {'reports': reports})
 
-
+# @login_required
 def Pricing(request):
     prices = PointsBundle.objects.all().order_by('-pkpoint_bundle')
     return render(request, 'pricing.html', {'prices': prices})
 
+from django.shortcuts import render, redirect
+from .models import PointsBundle
+
+import logging
+import pdb
+logger = logging.getLogger(__name__)
+
 def edit_points_bundle(request, pk):
-    points_bundle = PointsBundle.objects.get(pk=pk)
     if request.method == 'POST':
-        form = PointsBundleForm(request.POST, instance=points_bundle)
-        if form.is_valid():
-            form.save()
-            return redirect('points_bundles')  # redirect to the points bundles page
+        # Handle the POST request
+        points_bundle = PointsBundle.objects.get(pk=pk)
+        points_bundle.price = request.POST['price']
+        points_bundle.name = request.POST['name']
+        points_bundle.description = request.POST['description']
+        points_bundle.save()
+        return redirect('dashboard:Pricing')
     else:
-        form = PointsBundleForm(instance=points_bundle)
-    return render(request, 'edit_points_bundle.html', {'form': form})
+        # Handle the GET request
+        return render(request, 'pricing.html', {'prices': PointsBundle.objects.all()})
 
 
 
 
 from django.core.cache import cache
-
+# @login_required
 def UserList(request):
     # Check if the contact data is cached
     total_users = Users.objects.count()
@@ -174,11 +189,13 @@ def UserList(request):
     # Render the contact page with the contact data
     return render(request, 'userlist.html', {'users_with_post_count': users_with_post_count, 'total_users': total_users})
    
+@receiver(post_save, sender=Users)
+def invalidate_cache(sender, instance, **kwargs):
+    cache.delete('contact_data')
 
 
 
-
-
+# @login_required
 def AdminList(request):
     teams = Team.objects.all()
     users = Users.objects.all()
@@ -216,43 +233,74 @@ def clientRegister(request):
     return render(request, 'register.html')
 
 
+from django.contrib.auth import login
+from django.shortcuts import redirect
+from django.urls import reverse
+from django.contrib.auth import authenticate, login
+import binascii
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.hashers import check_password
 import hashlib
+
+import mysql.connector
 
 def loginpage(request):
     if request.method == 'POST':
         email = request.POST['email']
         password = request.POST['password']
 
-        try:
-            user = Users.objects.get(email=email)
-            if user.check_password(password):
-                login(request, user)  # Log the user in
-                if 'next' in request.GET:
-                    return redirect(request.GET['next'])
-                else:
-                    return redirect('UserList')  # Redirect to the UserList page
-            else:
-                error_msg = 'Invalid username or password'
-                return render(request, 'login.html', {'error': error_msg})
-        except Users.DoesNotExist:
-            error_msg = 'Invalid username or password'
-            return render(request, 'login.html', {'error': error_msg})
-    return render(request, 'login.html')
+        # Connect to the MySQL database
+        cnx = mysql.connector.connect(
+            user='dbmasteruser',
+            password='oW-?ElK<,C~fo`e;3_;b[9svd<VdjEr2',
+            host='ls-a6ea0c3b877a6923d6d9ca22364ab6ff3eb876b9.cleoey2mmxad.ap-southeast-1.rds.amazonaws.com',
+            database='chatter'
+        )
 
+        # Create a cursor object
+        cursor = cnx.cursor()
+
+        # Call the stored procedure
+        query = "CALL sp_Admin_Login(%s, %s)"
+        cursor.execute(query, (email, password))
+
+        # Fetch the result
+        result = cursor.fetchone()
+
+        # Close the cursor and connection
+        cursor.close()
+        cnx.close()
+
+        # Check if the result is not empty
+        if result:
+            # Extract the user_id, user_id_real, and nickname from the result
+            user_id = result[0]
+            user_id_real = result[1]
+            nickname = result[2]
+
+            # Return the user_id, user_id_real, and nickname as needed
+            return render(request, 'userlist.html')
+        else:
+            # Return an error message
+            error_msg = 'Invalid username or password'
+            return render(request, 'login.html', {'error_msg': error_msg})
+    return render(request, 'login.html')
 
 def logoutpage(request):
     logout(request)
     return redirect('/dashboard/login')
 
 
+from django.utils import timezone
 
 
-
-
+# @login_required
 def UserProfile(request, pkuser):
     user = get_object_or_404(Users, pk=pkuser)
     form = UserForm(instance=user, include_password_fields=True)
-
+    message_form = MessageForm()  # New form for sending messages
+    dummy_user = Users.objects.get(pk=1)  # Replace with a valid user ID
+    request.user = dummy_user
     # Add the chat list logic here
     chat_users = Users.objects.filter(
         Q(pk__in=Messages.objects.filter(msg_to=user).values('msg_from')) |
@@ -263,9 +311,9 @@ def UserProfile(request, pkuser):
         msg_count=Count('messages', filter=Q(messages__msg_to=user, messages__read=0) | Q(messages__msg_from=user, messages__read=0))
     ).values('pk', 'nickname', 'name', 'msg_count')
 
-    
-
     if request.method == 'POST':
+        print("Request method:", request.method)
+        print("Request POST:", request.POST)
         if 'add_points' in request.POST:
             point_type = request.POST.get('point_type')
             additional_points = int(request.POST.get('additional_points'))
@@ -275,8 +323,24 @@ def UserProfile(request, pkuser):
                 user.mail_count += additional_points
             user.save()
             user = get_object_or_404(Users, pk=pkuser)  # Retrieve the updated user object
+        elif 'send_message' in request.POST:  # New logic for sending messages
+            message_form = MessageForm(request.POST)
+            if message_form.is_valid():
+                message = Messages(msg_from=request.user, msg_to=user, data=message_form.cleaned_data['data'], datetime=timezone.now())
+                message.save_to_db()
+                return redirect('dashboard:UserProfile', pkuser=pkuser)
+        elif 'send_to_all' in request.POST:
+            message_form = MessageForm(request.POST)
+            if message_form.is_valid():
+                message_data = message_form.cleaned_data['data']
+                for user in Users.objects.all():
+                    if user != request.user:
+                        message = Messages(msg_from=request.user, msg_to=user, data=message_data, datetime=timezone.now())
+                        message.save_to_db()
+                return redirect('dashboard:UserProfile', pkuser=pkuser)
         else:
             form = UserForm(request.POST, instance=user, include_password_fields=True)
+            message_form = MessageForm()  # Set message_form to a valid form instance
             if form.is_valid():
                 if form.cleaned_data.get('new_password'):
                     from django.contrib.auth.hashers import make_password
@@ -295,6 +359,28 @@ def UserProfile(request, pkuser):
     if conversation_user_id:
         conversation_user = get_object_or_404(Users, pk=conversation_user_id)
         messages = Messages.objects.filter(Q(msg_from=user, msg_to=conversation_user) | Q(msg_from=conversation_user, msg_to=user)).order_by('datetime')
+        for message in messages:
+            if message.timezone == '1':
+                datetime_str = message.datetime
+                parts = datetime_str.split()
+                date_str = parts[0]
+                time_str = ' '.join(parts[1:])
+                time_str, am_pm = time_str.split(' ')
+                time_parts = time_str.split(':')
+                if len(time_parts) == 2:
+                    hour, minute = time_parts
+                    second = '00'
+                else:
+                    hour, minute, second = time_parts
+                if am_pm == 'PM' and int(hour) < 12:
+                    hour = str(int(hour) + 12)
+                elif am_pm == 'AM' and hour == '12':
+                    hour = '00'
+                if int(hour) > 23:
+                    hour = str(int(hour) - 24)
+                datetime_obj = datetime.strptime(f'{date_str} {hour}:{minute}:{second}', '%Y-%m-%d %H:%M:%S')
+                datetime_obj = datetime_obj - timedelta(hours=1)  # subtract 1 hour
+                message.datetime = datetime_obj.strftime('%Y-%m-%d %H:%M:%S')
     else:
         messages = []
 
@@ -307,12 +393,13 @@ def UserProfile(request, pkuser):
         'pkuser': pkuser,
         'chat_list': chat_list,
         'messages': messages,
-        'conversation_user': conversation_user if conversation_user_id else None
+        'conversation_user': conversation_user if conversation_user_id else None,
+        'message_form': message_form  # Pass the message form to the template
     })
 
 
 from django.core.cache import cache
-
+# @login_required
 def PostsList(request):
     # Check if the product data is cached
     product_data = cache.get('product_data')
@@ -364,6 +451,25 @@ def update_total_users_count(request):
         total_users = Users.objects.all().order_by('pk').count()
     return JsonResponse({'total_users': total_users})
 
-
-    
-
+def edit_post_status(request, pk):
+    post = Posts.objects.get(pk=pk)
+    post.status = 1 - post.status  # toggle the status
+    post.save()
+    cache.delete('product_data')  # invalidate the cache
+    return redirect('dashboard:PostsList')
+def delete_user(request, pkuser):
+    if request.method == 'POST':
+        user = Users.objects.get(pk=pkuser)
+        
+        # Delete rows in match table that reference the user
+        Match.objects.filter(user_to=user).delete()
+        Match.objects.filter(user_from=user).delete()
+        
+        # Delete rows in messages table that reference the user
+        Messages.objects.filter(msg_to=user).delete()
+        Messages.objects.filter(msg_from=user).delete()
+        
+        user.delete()
+        return redirect('dashboard:UserList')
+    else:
+        return HttpResponse("Invalid request method")

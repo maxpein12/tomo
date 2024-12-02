@@ -1,22 +1,20 @@
 from django import forms
-from .models import Client
-from .models import Users, PointsBundle
+from .models import Users, PointsBundle, Posts
 from datetime import datetime
-from .models import Posts
 
 # forms.py
-class ImageForm(forms.ModelForm):
-    class Meta:
-        model = Client
-        fields = ('profile_pic',)
-        widgets = {
-            'profile_pic': forms.FileInput(),
-        }
+# class ImageForm(forms.ModelForm):
+#     class Meta:
+#         model = Client
+#         fields = ('profile_pic',)
+#         widgets = {
+#             'profile_pic': forms.FileInput(),
+#         }
 
-    def save(self, *args, **kwargs):
-        instance = super(ImageForm, self).save(*args, **kwargs)
-        # You can add custom logic here if needed
-        return instance
+    # def save(self, *args, **kwargs):
+    #     instance = super(ImageForm, self).save(*args, **kwargs)
+    #     # You can add custom logic here if needed
+    #     return instance
     
 class UserForm(forms.ModelForm):
     new_password = forms.CharField(widget=forms.PasswordInput(), required=False)
@@ -58,7 +56,7 @@ class UserForm(forms.ModelForm):
 class PointsBundleForm(forms.ModelForm):
     class Meta:
         model = PointsBundle
-        fields = ('price', 'name', 'description')
+        fields = ('price', 'name', 'description', 'amount', 'percentage', 'promo_percentage', 'sku', 'call_minutes', 'mail_count')
     
 
 
@@ -67,3 +65,10 @@ class PointsBundleForm(forms.ModelForm):
 #     class Meta:
 #         model = Posts
 #         fields = ('description', 'image')
+from django import forms
+from .models import Messages
+
+class MessageForm(forms.ModelForm):
+    class Meta:
+        model = Messages
+        fields = ('data',)

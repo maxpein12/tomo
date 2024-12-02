@@ -5,7 +5,7 @@ from . import views
 from .views import DeletePostView
 # from .views import NewPostView
 
-
+app_name = 'dashboard'
 
 
 urlpatterns = [
@@ -18,15 +18,13 @@ urlpatterns = [
     path('ReportList/', views.ReportList, name='ReportList'),
     path('Pricing/', views.Pricing, name='Pricing'),
     path('AdminList/', views.AdminList, name='AdminList'),
-    path('UserList/', views.UserList, name='UserList'),
     path('login/', views.loginpage, name='login'),
     path('register/', views.clientRegister, name='register'),
     path('logout/', views.logoutpage, name='logout'),
-    path('UserList/<int:pkuser>/', views.UserProfile, name='UserList'),
+    path('UserProfile/<int:pkuser>/', views.UserProfile, name='UserProfile'),
     path('delete_post/<int:pkpost>/', DeletePostView.as_view(), name='delete_post'),
-    path('edit-points-bundle/<int:pk>/', views.edit_points_bundle, name='edit_points_bundle'),
+    path('edit_points_bundle/<pk>/', views.edit_points_bundle, name='edit_points_bundle'),
     path('update_total_users_count/', views.update_total_users_count, name='update_total_users_count'),
-    
-
-
+    path('edit_post_status/<pk>/', views.edit_post_status, name='edit_post_status'),
+    path('delete_user/<int:pkuser>/', views.delete_user, name='delete_user'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

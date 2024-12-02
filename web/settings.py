@@ -87,7 +87,7 @@ DATABASES = {
     #     'PORT': '3306',
         
     # }
-     'default': {
+    'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'chatter',
         'USER': 'dbmasteruser',
@@ -140,7 +140,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = 'login'
-LOGOUT_URL = 'login'
+LOGIN_URL = 'dashboard:login'
 
 # Base url to serve media files
 MEDIA_URL = '/media/'
@@ -149,6 +149,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
+    'dashboard.authentication.CustomAuthBackend',
 ]
 
 CACHES = {
@@ -166,3 +167,19 @@ PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.Argon2PasswordHasher',
     'django.contrib.auth.hashers.BCryptPasswordHasher',
 ]
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'dashboard': {
+            'level': 'INFO',
+            'handlers': ['console'],
+            'propagate': True,
+        },
+    },
+}

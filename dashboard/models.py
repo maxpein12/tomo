@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.contrib.auth.hashers import check_password
+from django.db import models
+from django.contrib.auth.models import AbstractBaseUser
 
 # Create your models here.
 class Team(models.Model):
@@ -15,42 +17,42 @@ class Team(models.Model):
     
 
 
-class Client(models.Model):
-    username = models.CharField(max_length=100, default='')
-    name = models.CharField(max_length=100)
-    points = models.IntegerField(default=0)
-    email = models.EmailField()
-    profile_pic = models.CharField(max_length=100, default='')
-    age = models.IntegerField(default=0)
-    gender = models.CharField(max_length=100)
-    # image = models.ImageField(upload_to='images')
+# class Client(models.Model):
+#     username = models.CharField(max_length=100, default='')
+#     name = models.CharField(max_length=100)
+#     points = models.IntegerField(default=0)
+#     email = models.EmailField()
+#     profile_pic = models.CharField(max_length=100, default='')
+#     age = models.IntegerField(default=0)
+#     gender = models.CharField(max_length=100)
+#     # image = models.ImageField(upload_to='images')
 
-    def __str__(self):
-        return f'{self.name} {self.email} {self.gender}'
+#     def __str__(self):
+#         return f'{self.name} {self.email} {self.gender}'
     
     
-class Product(models.Model):
-    name = models.CharField(max_length=100)
-    category = models.CharField(max_length=100)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    piece = models.IntegerField()
-    # image = models.ImageField(upload_to='images')
+# class Product(models.Model):
+#     name = models.CharField(max_length=100)
+#     category = models.CharField(max_length=100)
+#     price = models.DecimalField(max_digits=10, decimal_places=2)
+#     piece = models.IntegerField()
+#     # image = models.ImageField(upload_to='images')
 
-    def __str__(self):
-        return self.name
+#     def __str__(self):
+#         return self.name
     
 
-class Orders(models.Model):
-    name = models.CharField(max_length=100)
-    address = models.CharField(max_length=100)
-    date = models.DateField(default=timezone.now)
-    type = models.CharField(max_length=100)
-    quantity = models.IntegerField(8)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    is_completed = models.BooleanField(default=False)
+# class Orders(models.Model):
+#     name = models.CharField(max_length=100)
+#     address = models.CharField(max_length=100)
+#     date = models.DateField(default=timezone.now)
+#     type = models.CharField(max_length=100)
+#     quantity = models.IntegerField(8)
+#     price = models.DecimalField(max_digits=10, decimal_places=2)
+#     is_completed = models.BooleanField(default=False)
 
-    def __str__(self):
-        return self.name
+#     def __str__(self):
+#         return self.name
     
 
 # class Messages(models.Model):
@@ -58,8 +60,8 @@ class Orders(models.Model):
 #     message = models.TextField()
 #     timestamp = models.DateTimeField(default=timezone.now)
 
-    def __str__(self):
-        return self.message
+    # def __str__(self):
+    #     return self.message
     
 class AdminInquiry(models.Model):
     pkadmin_inquiry = models.BigAutoField(primary_key=True)
@@ -289,6 +291,9 @@ class Messages(models.Model):
     callstatus = models.IntegerField(blank=True, null=True)
     token = models.CharField(max_length=255, blank=True, null=True)
 
+    def save_to_db(self):
+        super(Messages, self).save()
+
     class Meta:
         managed = False
         db_table = 'messages'
@@ -464,10 +469,11 @@ class Users(models.Model):
     # pushkittoken = models.CharField(max_length=255, db_collation='utf16_unicode_ci', blank=True, null=True)
     resetpasswordcode = models.CharField(max_length=45, db_collation='utf16_unicode_ci', blank=True, null=True)
     # last_login = models.DateTimeField(blank=True, null=True)
+    # last_login = models.DateTimeField(blank=True, null=True)
 
-    
-    
-    
+    @property
+    def is_authenticated(self):
+        return self.type == 0
     def check_password(self, password):
         return check_password(password, self.password)
 

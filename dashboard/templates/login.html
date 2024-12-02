@@ -10,7 +10,7 @@
         <h2>Login to Account</h2>
         <p>Please enter your email and password to continue</p>
         
-        <form  method="post" >
+        <form  method="post" action="{% url 'dashboard:login' %}">
             {% csrf_token %}
             <div class="input-group">
                 <label for="email">Email address</label>

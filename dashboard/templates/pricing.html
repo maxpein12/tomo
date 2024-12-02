@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="/static/css/pricing.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 </head>
 
 <body>
@@ -18,44 +19,44 @@
             <h2>Tomodachi</h2>
         </div>
         <ul class="sidebar-menu">
-            <li><a href="{% url 'AdminList' %}" class="menu-item ">
+            <li><a href="{% url 'dashboard:AdminList' %}" class="menu-item ">
                 <img src="https://cdn.creazilla.com/icons/3251108/person-icon-lg.png" class="menu-icon" alt="Dashboard Icon">
                 Team</a>
             </li>
-            <li><a href="{% url 'MessageTemplate' %}" class="menu-item ">
+            <li><a href="{% url 'dashboard:MessageTemplate' %}" class="menu-item ">
                 <img src="https://cdn.icon-icons.com/icons2/1919/PNG/512/twospeechbubbles_122034.png" class="menu-icon" alt="Dashboard Icon">
                 Message Template</a>
             </li>
-            <li><a href="{% url 'UserList' %}" class="menu-item ">
+            <li><a href="{% url 'dashboard:UserList' %}" class="menu-item ">
                 <img src="https://cdn-icons-png.flaticon.com/128/1250/1250592.png" class="menu-icon" alt="Dashboard Icon">
                 Users</a>
             </li>
-            <li><a href="{% url 'PostsList' %}" class="menu-item">
+            <li><a href="{% url 'dashboard:PostsList' %}" class="menu-item">
                 <img src="https://cdn.icon-icons.com/icons2/2596/PNG/512/grid_four_icon_155315.png" class="menu-icon" alt="Dashboard Icon">
                 Posts</a>
             </li>
-            <li><a href="{% url 'Pricing' %}" class="menu-item active">
+            <li><a href="{% url 'dashboard:Pricing' %}" class="menu-item active">
                 <img src="https://cdn-icons-png.flaticon.com/512/1039/1039714.png" class="menu-icon" alt="Dashboard Icon">
                 Cart Information</a>
             </li>
-            <li><a href="{% url 'PurchaseHistory' %}" class="menu-item ">
+            <li><a href="{% url 'dashboard:PurchaseHistory' %}" class="menu-item ">
                 <img src="https://www.svgrepo.com/show/335104/list-checkmark.svg" class="menu-icon" alt="Dashboard Icon">
                 Purchase History</a>
             </li>
-            <li><a href="{% url 'ReportList' %}" class="menu-item ">
+            <li><a href="{% url 'dashboard:ReportList' %}" class="menu-item ">
                 <img src="https://static.thenounproject.com/png/602072-200.png" class="menu-icon" alt="Dashboard Icon">
                 Report</a>
             </li>
-            <li><a href="{% url 'SalesReport' %}" class="menu-item ">
+            <li><a href="{% url 'dashboard:SalesReport' %}" class="menu-item ">
                 <img src="https://www.svgrepo.com/show/335104/list-checkmark.svg" class="menu-icon" alt="Dashboard Icon">
                 Sales Report</a>
             </li>
-            <li><a href="{% url 'SalesChart' %}" class="menu-item ">
+            <li><a href="{% url 'dashboard:SalesChart' %}" class="menu-item ">
                 <img src="https://cdn0.iconfinder.com/data/icons/octicons/1024/dashboard-512.png" class="menu-icon" alt="Dashboard Icon">
                 Sales Chart</a>
             </li>
            
-            <li><a href="{% url 'logout' %}" class="menu-item">
+            <li><a href="{% url 'dashboard:logout' %}" class="menu-item">
                 <img src="https://cdn-icons-png.flaticon.com/512/157/157316.png" class="menu-icon" alt="Dashboard Icon">
                 Logout</a>
             </li>
@@ -89,10 +90,9 @@
                         <tr>
                             <th>ID</th>
                             <th>Price</th>
-                            <th>Title</th>
-                            <th>Detail</th>
+                            <th>Name</th>
+                            <th>Description</th>
                             <th>Edit</th>
-                            
                         </tr>
                     </thead>
                     <tbody>
@@ -103,9 +103,8 @@
                             <td>{{ price.name }}</td>
                             <td>{{ price.description }}</td>
                             <td>
-                                <a href="#edit-modal-{{ price.pkpoint_bundle }}" data-toggle="modal">Edit</a>
+                                <button type="button" class="edit-btn" data-toggle="modal" data-target="#edit-modal-{{ price.pkpoint_bundle }}">Edit</button>
                             </td>
-                            
                         </tr>
                         {% empty %}
                         <tr>
@@ -114,58 +113,53 @@
                         {% endfor %}
                     </tbody>
                 </table>
-            
                 {% for price in prices %}
-                <div class="modal fade" id="edit-modal-{{ price.pkpoint_bundle }}" tabindex="-1" role="dialog" aria-labelledby="edit-modal-label-{{ price.pkpoint_bundle }}" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="edit-modal-label-{{ price.pkpoint_bundle }}">Edit</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
+    {% if price.pkpoint_bundle %}
+    <div class="modal fade" id="edit-modal-{{ price.pkpoint_bundle }}" tabindex="-1" role="dialog" aria-labelledby="edit-modal-label-{{ price.pkpoint_bundle }}" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="edit-modal-label-{{ price.pkpoint_bundle }}">Edit</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="edit-form-{{ price.pkpoint_bundle }}" method="post" action="{% url 'dashboard:edit_points_bundle' price.pkpoint_bundle %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="pk" value="{{ price.pkpoint_bundle }}">
+                            <div class="form-group">
+                                <label for="price">Price:</label>
+                                <input type="text" class="form-control" id="price" name="price" value="{{ price.price }}">
                             </div>
-                            <div class="modal-body">
-                                <form method="post" action="{% url 'edit_points_bundle' price.pkpoint_bundle %}">
-                                    {% csrf_token %}
-                                    <div class="form-group">
-                                        <label for="price">Price:</label>
-                                        <input type="text" class="form-control" id="price" name="price" value="{{ price.price }}">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="name">Name:</label>
-                                        <input type="text" class="form-control" id="name" name="name" value="{{ price.name }}">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="description">Description:</label>
-                                        <input type="text" class="form-control" id="description" name="description" value="{{ price.description }}">
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">Save</button>
-                                </form>
-                                <script>
-                                    console.log("Form submitted");
-                                </script>
+                            <div class="form-group">
+                                <label for="name">Name:</label>
+                                <input type="text" class="form-control" id="name" name="name" value="{{ price.name }}">
                             </div>
-                        </div>
+                            <div class="form-group">
+                                <label for="description">Description:</label>
+                                <input type="text" class="form-control" id="description" name="description" value="{{ price.description }}">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Edit</button>
+</form>
                     </div>
                 </div>
-                {% endfor %}
-            </section>
-            
-            <script>
+            </div>
+        </div>
+    {% endif %}
+{% endfor %}
+                <!-- <script>
                 $(document).ready(function() {
-                    console.log("Document ready");
-                    $(".btn-primary").on("click", function() {
-                        console.log("Button clicked");
-                        var modalId = $(this).data("target");
-                        console.log("Modal ID: " + modalId);
-                        $(modalId).modal("show");
-                    });
-                });
-            </script>
+    $('.edit-btn').on('click', function() {
+        var pk = $(this).data('pk');
+        $('#edit-form-' + pk).attr('method', 'POST').submit();
+    });
+});
+
+                </script> -->
         </div>
     </main>
-
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" ></script>
     <script src="/static/js/pricing.js"></script>
 </body>
