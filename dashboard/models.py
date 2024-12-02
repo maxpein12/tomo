@@ -285,7 +285,7 @@ class Messages(models.Model):
     data = models.TextField(blank=True, null=True)
     type = models.CharField(max_length=50, db_collation='utf16_unicode_ci', blank=True, null=True)
     datetime = models.CharField(max_length=50, db_collation='utf16_unicode_ci', blank=True, null=True)
-    timezone = models.CharField(max_length=50, db_collation='utf16_unicode_ci', blank=True, null=True)
+    timezone = models.CharField(max_length=50, db_collation='utf16_unicode_ci', blank=True, null=True, default=1)
     read = models.IntegerField(blank=True, null=True)
     save = models.IntegerField(blank=True, null=True)
     callstatus = models.IntegerField(blank=True, null=True)

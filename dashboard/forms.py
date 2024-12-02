@@ -1,7 +1,7 @@
 from django import forms
 from .models import Users, PointsBundle, Posts
 from datetime import datetime
-
+from django.utils import timezone
 # forms.py
 # class ImageForm(forms.ModelForm):
 #     class Meta:
@@ -69,6 +69,22 @@ from django import forms
 from .models import Messages
 
 class MessageForm(forms.ModelForm):
+    timezone = forms.IntegerField(widget=forms.HiddenInput, initial=1, required=False)  # Add timezone field
+
     class Meta:
         model = Messages
-        fields = ('data',)
+        fields = ('data', 'timezone')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['timezone'].initial = 1  # Set default timezone to 1 (Japan)
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.datetime = timezone.now()
+        instance.timezone = self.cleaned_data['timezone']  # Set timezone to the value from the form
+        if commit:
+            instance.save()
+        return instance
+
+        

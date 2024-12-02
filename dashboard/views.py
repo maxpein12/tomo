@@ -360,6 +360,9 @@ def UserProfile(request, pkuser):
         conversation_user = get_object_or_404(Users, pk=conversation_user_id)
         messages = Messages.objects.filter(Q(msg_from=user, msg_to=conversation_user) | Q(msg_from=conversation_user, msg_to=user)).order_by('datetime')
         for message in messages:
+            print(message.data)
+            print(message.datetime)
+            print(message.timezone)
             if message.timezone == '1':
                 datetime_str = message.datetime
                 parts = datetime_str.split()
