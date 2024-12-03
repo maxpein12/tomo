@@ -14,47 +14,47 @@ function searchContacts() {
 }
 
 
-$(document).ready(function () {
-    UserDetails.getUserChatted();
-  });
+// $(document).ready(function () {
+//     UserDetails.getUserChatted();
+//   });
 
   
-  UserDetails.getUserChatted = function () {
-    console.log('Getting user chat list...');
-    $.ajax({
-      type: 'GET',
-      url: '/UserList/' + Cookies.get('userid'),
-      dataType: 'json',
-      success: function (data) {
-        console.log('Received data:', data);
-        console.log('Data length:', data.length);
-        const userList = document.getElementById('user-chatted');
-        console.log('User list element:', userList);
-        userList.innerHTML = '';
+//   UserDetails.getUserChatted = function () {
+//     console.log('Getting user chat list...');
+//     $.ajax({
+//       type: 'GET',
+//       url: '/UserList/' + Cookies.get('userid'),
+//       dataType: 'json',
+//       success: function (data) {
+//         console.log('Received data:', data);
+//         console.log('Data length:', data.length);
+//         const userList = document.getElementById('user-chatted');
+//         console.log('User list element:', userList);
+//         userList.innerHTML = '';
   
-        data.forEach(function (user) {
-          console.log('Processing user:', user);
-          const msgCount = user.msg_count > 0 ? `<span>${user.msg_count}</span>` : '';
-          const userHtml = `
-            <div user-id="${user.pk}" class="user-chatted-container">
-              <span>${user.name}</span>
-              ${msgCount}
-            </div>
-          `;
-          userList.insertAdjacentHTML('beforeend', userHtml);
-        });
+//         data.forEach(function (user) {
+//           console.log('Processing user:', user);
+//           const msgCount = user.msg_count > 0 ? `<span>${user.msg_count}</span>` : '';
+//           const userHtml = `
+//             <div user-id="${user.pk}" class="user-chatted-container">
+//               <span>${user.name}</span>
+//               ${msgCount}
+//             </div>
+//           `;
+//           userList.insertAdjacentHTML('beforeend', userHtml);
+//         });
   
-        console.log('Chat list populated.');
-        document.querySelectorAll('.user-chatted-container').forEach(function (user) {
-          console.log('Adding click event listener to user:', user);
-          user.addEventListener('click', UserDetails.chattedClick);
-        });
-      },
-      error: function (xhr, status, error) {
-        console.log('Error:', error);
-      }
-    });
-  }
+//         console.log('Chat list populated.');
+//         document.querySelectorAll('.user-chatted-container').forEach(function (user) {
+//           console.log('Adding click event listener to user:', user);
+//           user.addEventListener('click', UserDetails.chattedClick);
+//         });
+//       },
+//       error: function (xhr, status, error) {
+//         console.log('Error:', error);
+//       }
+//     });
+//   }
 
   const userList = document.getElementById('user-list');
 const conversationDisplay = document.getElementById('conversation-display');
@@ -93,3 +93,19 @@ $(document).ready(function() {
     }
 });
 
+
+$(document).ready(function() {
+  $('#template-button').on('click', function() {
+    console.log('Select Template button clicked');
+    $('#template-options').toggle();
+  });
+
+  $('#apply-template').on('click', function() {
+    var selectedValue = $('#message-template').val();
+    console.log('Apply Template button clicked');
+    console.log('Selected value:', selectedValue);
+    selectedValue = decodeURIComponent(selectedValue);
+    $('textarea[name="data"]').val(selectedValue);
+    $('#template-options').toggle();
+  });
+});

@@ -293,14 +293,20 @@ def logoutpage(request):
 
 from django.utils import timezone
 
+from dateutil import parser
+import pytz
+from datetime import datetime
+
 
 # @login_required
 def UserProfile(request, pkuser):
+    message_templates = [{'value': urllib.parse.unquote(template[0])} for template in MessageTemplates.objects.values_list('value')]
     user = get_object_or_404(Users, pk=pkuser)
     form = UserForm(instance=user, include_password_fields=True)
     message_form = MessageForm()  # New form for sending messages
     dummy_user = Users.objects.get(pk=1)  # Replace with a valid user ID
     request.user = dummy_user
+
     # Add the chat list logic here
     chat_users = Users.objects.filter(
         Q(pk__in=Messages.objects.filter(msg_to=user).values('msg_from')) |
@@ -326,7 +332,7 @@ def UserProfile(request, pkuser):
         elif 'send_message' in request.POST:  # New logic for sending messages
             message_form = MessageForm(request.POST)
             if message_form.is_valid():
-                message = Messages(msg_from=request.user, msg_to=user, data=message_form.cleaned_data['data'], datetime=timezone.now())
+                message = Messages(msg_from=request.user, msg_to=user, data=message_form.cleaned_data['data'], datetime=datetime.now().strftime('%Y-%m-%d  %I:%M %p'))
                 message.save_to_db()
                 return redirect('dashboard:UserProfile', pkuser=pkuser)
         elif 'send_to_all' in request.POST:
@@ -335,7 +341,7 @@ def UserProfile(request, pkuser):
                 message_data = message_form.cleaned_data['data']
                 for user in Users.objects.all():
                     if user != request.user:
-                        message = Messages(msg_from=request.user, msg_to=user, data=message_data, datetime=timezone.now())
+                        message = Messages(msg_from=request.user, msg_to=user, data=message_data, datetime=datetime.datetime.now().strftime('%Y-%m-%d  %I:%M %p'))
                         message.save_to_db()
                 return redirect('dashboard:UserProfile', pkuser=pkuser)
         else:
@@ -354,36 +360,44 @@ def UserProfile(request, pkuser):
                 user.mail_count = form.cleaned_data.get('mail_count')
                 user.save()
 
-    # Add the chat display logic here
+   # Add the chat display logic here
     conversation_user_id = request.GET.get('conversation_user')
     if conversation_user_id:
         conversation_user = get_object_or_404(Users, pk=conversation_user_id)
-        messages = Messages.objects.filter(Q(msg_from=user, msg_to=conversation_user) | Q(msg_from=conversation_user, msg_to=user)).order_by('datetime')
+        messages = Messages.objects.filter(Q(msg_from=user, msg_to=conversation_user) | Q(msg_from=conversation_user, msg_to=user))
         for message in messages:
-            print(message.data)
-            print(message.datetime)
-            print(message.timezone)
-            if message.timezone == '1':
-                datetime_str = message.datetime
-                parts = datetime_str.split()
-                date_str = parts[0]
-                time_str = ' '.join(parts[1:])
-                time_str, am_pm = time_str.split(' ')
-                time_parts = time_str.split(':')
-                if len(time_parts) == 2:
-                    hour, minute = time_parts
-                    second = '00'
+            
+            
+            if message.datetime:
+                datetime_obj = datetime.strptime(message.datetime, '%Y-%m-%d %H:%M %p')
+                date_string = datetime_obj.strftime('%Y-%m-%d %I:%M %p')
+                date_parts = date_string.split(' ')
+                if len(date_parts) >= 3:
+                    date = date_parts[0]
+                    time = date_parts[1]
+                    am_pm = date_parts[2]
+                    time_parts = time.split(':')
+                    if len(time_parts) == 2:
+                        hour, minute = time_parts
+                        hour = int(hour)
+                        minute = int(minute)
+                    else:
+                        hour = 0
+                        minute = 0
+                    if am_pm == 'PM' and hour != 12:
+                        hour += 12
+                    elif am_pm == 'AM' and hour == 12:
+                        hour = 0
+                    if hour > 23:  # handle invalid hour values
+                        hour = 23
+                    datetime_obj = datetime.strptime(f'{date} {hour}:{minute}', '%Y-%m-%d %H:%M')
+                    if datetime_obj.tzinfo is None:
+                                            datetime_obj = datetime_obj.replace(tzinfo=pytz.UTC)
+                    message.datetime_obj = datetime_obj
                 else:
-                    hour, minute, second = time_parts
-                if am_pm == 'PM' and int(hour) < 12:
-                    hour = str(int(hour) + 12)
-                elif am_pm == 'AM' and hour == '12':
-                    hour = '00'
-                if int(hour) > 23:
-                    hour = str(int(hour) - 24)
-                datetime_obj = datetime.strptime(f'{date_str} {hour}:{minute}:{second}', '%Y-%m-%d %H:%M:%S')
-                datetime_obj = datetime_obj - timedelta(hours=1)  # subtract 1 hour
-                message.datetime = datetime_obj.strftime('%Y-%m-%d %H:%M:%S')
+                    message.datetime_obj = None
+        messages = sorted(messages, key=lambda x: x.datetime_obj or datetime.min)
+        print(messages)
     else:
         messages = []
 
@@ -397,7 +411,8 @@ def UserProfile(request, pkuser):
         'chat_list': chat_list,
         'messages': messages,
         'conversation_user': conversation_user if conversation_user_id else None,
-        'message_form': message_form  # Pass the message form to the template
+        'message_form': message_form,
+        'message_templates': message_templates,# Pass the message form to the template
     })
 
 
@@ -476,3 +491,5 @@ def delete_user(request, pkuser):
         return redirect('dashboard:UserList')
     else:
         return HttpResponse("Invalid request method")
+    
+
