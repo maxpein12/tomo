@@ -83,15 +83,15 @@ userList.addEventListener('click', (event) => {
 });
 
 
-$(document).ready(function() {
-    var conversationUser = $("#chat-section").data("conversation-user");
-    if (conversationUser) {
-        var chartSection = $("#conversation-display");
-        $("html, body").animate({
-            scrollTop: chartSection.offset().top
-        }, 500);
-    }
-});
+// $(document).ready(function() {
+//     var conversationUser = $("#chat-section").data("conversation-user");
+//     if (conversationUser) {
+//         var chartSection = $("#conversation-display");
+//         $("html, body").animate({
+//             scrollTop: chartSection.offset().top
+//         }, 500);
+//     }
+// });
 
 
 $(document).ready(function() {

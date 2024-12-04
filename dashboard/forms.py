@@ -16,6 +16,8 @@ from django.utils import timezone
     #     # You can add custom logic here if needed
     #     return instance
     
+import hashlib
+
 class UserForm(forms.ModelForm):
     new_password = forms.CharField(widget=forms.PasswordInput(), required=False)
     confirm_new_password = forms.CharField(widget=forms.PasswordInput(), required=False)
@@ -35,22 +37,55 @@ class UserForm(forms.ModelForm):
             self.fields['new_password'].widget = forms.HiddenInput()
             self.fields['confirm_new_password'].widget = forms.HiddenInput()
 
-
-
     def calculate_age(self, dob):
         today = datetime.today()
-        
         age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
         return age
-    def clean(self):
-        cleaned_data = super(UserForm, self).clean()
-        if self.fields['new_password'].widget != forms.HiddenInput():
-            new_password = cleaned_data.get("new_password")
-            confirm_new_password = cleaned_data.get("confirm_new_password")
 
+    def clean(self):
+        print("clean method called")
+        cleaned_data = super().clean()
+        new_password = cleaned_data.get("new_password")
+        confirm_new_password = cleaned_data.get("confirm_new_password")
+
+        if new_password and confirm_new_password:
             if new_password != confirm_new_password:
                 self.add_error('confirm_new_password', "New password and confirm new password do not match.")
+
         return cleaned_data
+
+
+    def is_valid(self):
+        print("is_valid method called")
+        return super().is_valid()
+    
+    def save(self, *args, **kwargs):
+        print("Save method called")
+        # Get the user details from the form
+        strUserId = self.instance.pk
+        strName = self.cleaned_data['name']
+        strEmail = self.cleaned_data['email']
+        intGender = self.cleaned_data['gender']
+        intStatus = self.cleaned_data['status']
+        intAgeVerified = self.cleaned_data['age_verified']
+        strPassword = self.cleaned_data.get('new_password')
+
+        print("strPassword before update:", strPassword)
+
+        # Call the stored procedure to save the user details
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.callproc('sp_Admin_Save_User', [
+                strPassword,
+                strName,
+                strEmail,
+                intStatus,
+                intGender,
+                intAgeVerified,
+                strUserId
+            ])
+
+        return self.instance
     
 
 class PointsBundleForm(forms.ModelForm):

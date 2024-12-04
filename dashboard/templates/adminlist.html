@@ -84,16 +84,14 @@
             <section class="deals-details">
                 <h2>Team Lists</h2>
                 
-               
-
                 <div class="content">
                     <div class="header">
                         <h3>Admins</h3>
-                        <a href="/admin/auth/user/" target="_blank">
-                        <button class="btn-add-member">Add New Member</button>
-                    </a>
+                        <a href="{% url 'dashboard:add_admin_member' %}">
+                            <button class="btn-add-member">Add New Member</button>
+                        </a>
                     </div>
-        
+                
                     <!-- Team grid -->
                     <div class="team-grid">
                         <!-- Team member card -->
@@ -109,7 +107,10 @@
                             
                             <!-- <h5 class="team-name">Jason Price</h5>
                             <p class="team-role">Admin<br><small>janick_parisian@yahoo.com</small></p> -->
-                            <a href="/admin/auth/user/{{user.id}}/change/" target="_blank"><button class="btn-edit"><span class="icon-edit">&#9998;</span> Edit</button></a>
+                            <form action="{% url 'dashboard:delete_admin' user.pk %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
                           
                         </div>
                         {% endif %}
@@ -118,7 +119,7 @@
                         <!-- Repeat similar cards for other users -->
                     </div>
                 </div>
- 
+             
             </section>
         </div>
     </main>

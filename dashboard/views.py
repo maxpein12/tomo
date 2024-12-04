@@ -17,6 +17,7 @@ from django.http import HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 # from .forms import PostForm
 import os
+from django.db import connections
 import urllib.parse
 from django.http import JsonResponse
 from django.db.models import Q, Count
@@ -306,7 +307,7 @@ def UserProfile(request, pkuser):
     message_form = MessageForm()  # New form for sending messages
     dummy_user = Users.objects.get(pk=1)  # Replace with a valid user ID
     request.user = dummy_user
-
+    request.session['last_visited_profile_id'] = pkuser
     # Add the chat list logic here
     chat_users = Users.objects.filter(
         Q(pk__in=Messages.objects.filter(msg_to=user).values('msg_from')) |
@@ -318,8 +319,8 @@ def UserProfile(request, pkuser):
     ).values('pk', 'nickname', 'name', 'msg_count')
 
     if request.method == 'POST':
-        print("Request method:", request.method)
-        print("Request POST:", request.POST)
+        # print("Request method:", request.method)
+        # print("Request POST:", request.POST)
         if 'add_points' in request.POST:
             point_type = request.POST.get('point_type')
             additional_points = int(request.POST.get('additional_points'))
@@ -348,17 +349,10 @@ def UserProfile(request, pkuser):
             form = UserForm(request.POST, instance=user, include_password_fields=True)
             message_form = MessageForm()  # Set message_form to a valid form instance
             if form.is_valid():
-                if form.cleaned_data.get('new_password'):
-                    from django.contrib.auth.hashers import make_password
-                    user.password = make_password(form.cleaned_data.get('new_password'))
-                user.name = form.cleaned_data.get('name')
-                user.email = form.cleaned_data.get('email')
-                user.gender = form.cleaned_data.get('gender')
-                user.status = form.cleaned_data.get('status')
-                user.age_verified = form.cleaned_data.get('age_verified')
-                user.call_minutes = form.cleaned_data.get('call_minutes')
-                user.mail_count = form.cleaned_data.get('mail_count')
-                user.save()
+                print("Form is valid")
+                print("Form data:", form.cleaned_data)
+                print("New password:", form.cleaned_data.get('new_password'))
+                form.save()
 
    # Add the chat display logic here
     conversation_user_id = request.GET.get('conversation_user')
@@ -437,11 +431,15 @@ def PostsList(request):
 
 
 
-class DeletePostView(LoginRequiredMixin, View):
+class DeletePostView(View):
     def post(self, request, pkpost):
         post = get_object_or_404(Posts, pk=pkpost)
         post.delete()
-        return render (request, 'test.html')  # Replace 'home' with the URL of the home page
+        last_visited_profile_id = request.session.get('last_visited_profile_id')
+        if last_visited_profile_id:
+            return redirect(reverse('dashboard:UserProfile', kwargs={'pkuser': last_visited_profile_id}))
+        else:
+            return redirect('dashboard:PostsList') # redirect to home page or any other page that doesn't require authentication
     
 
 
@@ -488,8 +486,72 @@ def delete_user(request, pkuser):
         Messages.objects.filter(msg_from=user).delete()
         
         user.delete()
-        return redirect('dashboard:UserList')
+        return redirect(reverse('dashboard:delete_user', kwargs={'pkuser': pkuser}))
     else:
         return HttpResponse("Invalid request method")
     
 
+def add_admin_member(request):
+    if request.method == 'POST':
+        strName = request.POST['name']
+        strNickname = request.POST['nickname']
+        strEmail = request.POST['email']
+        strPassword = request.POST['password1']
+        
+        
+        with connections['default'].cursor() as cursor:
+            cursor.callproc('sp_Admin_Save', [strName, strNickname, strEmail, strPassword])
+            
+        return redirect('dashboard:AdminList')
+    return render(request, 'register.html')
+    
+
+import json
+def update_price(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        
+        try:
+            price_obj = PointsBundle.objects.get(pk=data['id'])
+            
+            if 'pkpoint_bundle' in data and data['pkpoint_bundle'] != '':
+                price_obj.pkpoint_bundle = data['pkpoint_bundle']
+            if 'price' in data:
+                price_obj.price = data['price']
+            if 'name' in data:
+                price_obj.name = data['name']
+            if 'description' in data:
+                price_obj.description = data['description']
+            
+            price_obj.save()
+            return JsonResponse({'status': 'success'})
+        except PointsBundle.DoesNotExist:
+            return JsonResponse({'status': 'error'})
+    else:
+        return JsonResponse({'status': 'error'})
+
+def update_message(request, pk):
+    message = get_object_or_404(MessageTemplates, pk=pk)
+    if request.method == 'POST':
+        message.value = request.POST['value']
+        message.save()
+    return redirect('dashboard:MessageTemplate')
+
+def delete_message(request, pk):
+    message = get_object_or_404(MessageTemplates, pk=pk)
+    if request.method == 'POST':
+        message.delete()
+    return redirect('dashboard:MessageTemplate')
+
+def add_message(request):
+    if request.method == 'POST':
+        value = request.POST['value']
+        message = MessageTemplates(value=value)
+        message.save()
+    return redirect('dashboard:MessageTemplate')
+
+def delete_admin(request, pk):
+    user = get_object_or_404(Users, pk=pk)
+    if request.method == 'POST':
+        user.delete()
+    return redirect('dashboard:AdminList')

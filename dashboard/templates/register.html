@@ -10,45 +10,30 @@
         <h2>Create Account</h2>
         <p>Please fill in the details below to create an account.</p>
     
-        <form action="" method="post">
-            {% csrf_token %}
-            <div class="input-group">
-                <label for="name">Username</label>
-                <input type="text" id="username" name="username" placeholder="Enter your Username" required>
-            </div>
-            <div class="input-group">
-                <label for="name">Name</label>
-                <input type="text" id="name" name="name" placeholder="Enter your name" required>
-            </div>
-    
-            <div class="input-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" placeholder="Enter your email" required>
-            </div>
-            <div class="input-group">
-                <label for="age">Age</label>
-                <input type="number" id="age" name="age"  required>
-            </div>
-    
-            <div class="input-group">
-                <label for="gender">Gender</label>
-                <input type="text" id="gender" name="gender"  required>
-            </div>
-    
-   
-    
-            <div class="input-group checkbox-group">
-                <label class="checkbox-label">
-                    <input type="checkbox" required> I agree to the&nbsp;
-                    <a href="#" class="terms-link" target="_blank">Terms and Conditions</a>
-                </label>
-            </div>
-    
-            <button type="submit" class="btn" name="clientRegister">Register</button>
-        </form>
+        <!DOCTYPE html>
+<html>
+<head>
+    <title>Add Admin Member</title>
+</head>
+<body>
+    <h1>Add Admin Member</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="nickname">nickname:</label>
+        <input type="text" id="nickname" name="nickname"><br><br>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name"><br><br>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email"><br><br>
+        <label for="password1">Password:</label>
+        <input type="password" id="password1" name="password1"><br><br>
+        <input type="submit" value="Add Admin Member">
+    </form>
+</body>
+</html>
     
         <div class="register-link">
-            Already have an account? <a href="{% url 'login' %}">Login</a>
+            Already have an account? <a href="{% url 'dashboard:login' %}">Login</a>
         </div>
     </div>
     

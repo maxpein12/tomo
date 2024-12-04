@@ -26,3 +26,14 @@ menuItems.forEach(item => {
         this.classList.add('active');
     });
 });
+
+
+function editTemplate(pk) {
+    document.getElementById("template-" + pk).style.display = "none";
+    document.getElementById("edit-template-" + pk).style.display = "block";
+}
+
+function cancelEdit(pk) {
+    document.getElementById("template-" + pk).style.display = "block";
+    document.getElementById("edit-template-" + pk).style.display = "none";
+}

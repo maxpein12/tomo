@@ -271,7 +271,7 @@ class Match(models.Model):
 class MessageTemplates(models.Model):
     pkmessage_template = models.AutoField(primary_key=True)
     value = models.CharField(max_length=255)
-    date_created = models.DateTimeField()
+    date_created = models.DateTimeField(default=timezone.now)
 
     class Meta:
         managed = False

@@ -83,7 +83,7 @@
         <!-- Inbox Section -->
         <section class="main-body">
             <section class="deals-details">
-                <h2>Report</h2>
+                <h2>Message Templates</h2>
                 
                 <table class="table table-striped table-bordered">
                     <thead>
@@ -91,24 +91,47 @@
                             <th>ID</th>
                             <th>Templates</th>
                             <th>Action</th>
-                           
-                            
                         </tr>
                     </thead>
                     <tbody>
                         {% for message in messages %}
                         <tr>
                             <td>{{ message.pk }}</td>
-                            <td>{{ message.value }}</td>
-                            <td><Button>Edit</Button><Button>Delete</Button></td>
+                            <td>
+                                <span id="template-{{ message.pk }}">{{ message.value }}</span>
+                                <form id="edit-template-{{ message.pk }}" style="display: none;" action="{% url 'dashboard:update_message' message.pk %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="text" name="value" value="{{ message.value }}">
+                                    <button type="submit" class="btn btn-success">Save</button>
+                                    <button type="button" class="btn btn-warning" onclick="cancelEdit({{ message.pk }})">Cancel</button>
+                                </form>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-success" onclick="editTemplate({{ message.pk }})">Edit</button>
+                                <form action="{% url 'dashboard:delete_message' message.pk %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
+                            </td>
                         </tr>
-                    {% endfor %}  
-
+                        {% endfor %}  
+            
+                        <tr>
+                            <td></td>
+                            <td>
+                                <form id="add-template-form" action="{% url 'dashboard:add_message' %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="text" name="value" placeholder="Enter new template">
+                                    <button type="submit" class="btn btn-primary">Add</button>
+                                </form>
+                            </td>
+                            <td></td>
+                        </tr>
+            
                     </tbody>
-                            
-                        <!-- Repeat this for other products -->
                 </table>
             </section>
+        </section>
     </main>
 
     <script src="/static/js/messagetemplate.js"></script>
