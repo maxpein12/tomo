@@ -1,6 +1,6 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from .models import  Team, Messages, Posts
-from .models import Users, BlockUser, ViewPurchases, PointsBundle, MessageTemplates
+from .models import Users, BlockUser, ViewPurchases, PointsBundle, MessageTemplates, BlockUser, ViewedProfile
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
@@ -159,6 +159,10 @@ def UserList(request):
     contact_data = cache.get('contact_data')
     sort = request.GET.get('sort')
 
+    if sort is not None:
+        # If the sort parameter is present, delete the cached data
+        cache.delete('contact_data')
+
     if contact_data is None:
         # If the contact data is not cached, retrieve it from the database
         users = Users.objects.all()
@@ -192,6 +196,10 @@ def UserList(request):
    
 @receiver(post_save, sender=Users)
 def invalidate_cache(sender, instance, **kwargs):
+    cache.delete('contact_data')
+
+@receiver(post_save, sender=Posts)
+def invalidate_cache_on_post_save(sender, instance, **kwargs):
     cache.delete('contact_data')
 
 
@@ -484,6 +492,14 @@ def delete_user(request, pkuser):
         # Delete rows in messages table that reference the user
         Messages.objects.filter(msg_to=user).delete()
         Messages.objects.filter(msg_from=user).delete()
+
+        ViewedProfile.objects.filter(fkviewer=user.pkuser).delete()
+        ViewedProfile.objects.filter(fkviewed_profile=user.pkuser).delete()
+        
+        BlockUser.objects.filter(user_from=user.pkuser).delete()
+        BlockUser.objects.filter(user_to=user.pkuser).delete()
+
+        
         
         user.delete()
         return redirect(reverse('dashboard:delete_user', kwargs={'pkuser': pkuser}))
@@ -555,3 +571,15 @@ def delete_admin(request, pk):
     if request.method == 'POST':
         user.delete()
     return redirect('dashboard:AdminList')
+
+from django.http import JsonResponse
+
+def invalidate_cache(request):
+    # Get the cache key from the request body
+    cache_key = request.POST.get('cacheKey')
+
+    # Invalidate the cache
+    cache.delete(cache_key)
+
+    # Return a JSON response indicating success
+    return JsonResponse({'success': True})

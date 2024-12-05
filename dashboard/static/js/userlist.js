@@ -166,13 +166,55 @@ function searchContacts() {
   document.getElementById('total-users-count').innerHTML = count;
 
   // If the sort order is 'newest' or 'oldest', send a request to the server to re-sort the data
-  if (sortOrder === "newest" || sortOrder === "oldest") {
-    let url = window.location.href;
-    let params = new URLSearchParams(url.split('?')[1]);
+  if (sortOrder === "newest" || sortOrder === "oldest" || status !== "all" || input !== "") {
+    let url = ''; // assume this is the URL that returns the contact data
+    let params = new URLSearchParams();
     params.set('sort', sortOrder);
-    window.location.href = url.split('?')[0] + '?' + params.toString();
+    params.set('status', status);
+    params.set('search', input);
+    params.set('cache-bust', Date.now()); // add a cache-busting parameter
+
+    fetch(url + '?' + params.toString())
+      .then(response => response.json())
+      .then(data => {
+        // update the contact list with the new data
+        let contactList = document.getElementById('contact-list');
+        contactList.innerHTML = ''; // clear the existing list
+        data.forEach(contact => {
+          let contactHTML = `
+            <li class="contact">
+              <span class="contact-name">${contact.name}</span>
+              <span class="contact-email">${contact.email}</span>
+              <span id="age-verified">${contact.ageVerified}</span>
+              <span class="message-btn">${contact.onlineOfflineStatus}</span>
+            </li>
+          `;
+          contactList.innerHTML += contactHTML;
+        });
+      });
   }
 }
+
+// Get all images with the data-src attribute
+const images = document.querySelectorAll('img[data-src]');
+
+// Create an IntersectionObserver instance
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      const image = entry.target;
+      image.src = image.dataset.src;
+      observer.unobserve(image);
+    }
+  });
+}, {
+  rootMargin: '50px', // adjust this value to control the loading distance
+});
+
+// Observe all images
+images.forEach((image) => {
+  observer.observe(image);
+});
 
 // function updateTotalUsersCount() {
 //   console.log('updateTotalUsersCount called'); // Add this line to see if the function is being called

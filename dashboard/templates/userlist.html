@@ -150,8 +150,8 @@
                 <ul id="contact-list" class="contact-grid">
                     {% for user_with_post_count in users_with_post_count %}
                     <li class="contact">
-                        <img src="http://52.221.236.229:8069/media/user_profile_photos/{{ user_with_post_count.user.pk }}/image.jpg" 
-       alt="Profile Picture" class="profile-picture" id="profile-picture" >
+                        <img src="http://52.221.236.229:8069/media/user_profile_photos/{{ user_with_post_count.user.pk }}/image.jpg"
+         alt="Profile Picture" class="profile-picture" id="profile-picture" loading="lazy" onerror="this.src='../../media/images/Asset66.png'">
      
                         <div class="contact-info">
                             <a href="{% url 'dashboard:UserProfile' pkuser=user_with_post_count.user.pk %}" style="color: white; text-decoration: none;" class="contact-name"> {{ user_with_post_count.user.name }} </span></a>
