@@ -127,7 +127,7 @@ function searchContacts() {
   var li = document.getElementsByClassName("contact");
   let input = document.getElementById('search').value.toLowerCase();
   let status = document.getElementById('status').value;
-  let sortOrder = document.getElementById('status').value;
+  let sortOrder = document.getElementById('sort-order').value; // New variable for sort order
 
   let count = 0; // Initialize a variable to count the number of results
 
@@ -165,33 +165,17 @@ function searchContacts() {
   // Update the count display
   document.getElementById('total-users-count').innerHTML = count;
 
-  // If the sort order is 'newest' or 'oldest', send a request to the server to re-sort the data
-  if (sortOrder === "newest" || sortOrder === "oldest" || status !== "all" || input !== "") {
-    let url = ''; // assume this is the URL that returns the contact data
-    let params = new URLSearchParams();
-    params.set('sort', sortOrder);
-    params.set('status', status);
-    params.set('search', input);
-    params.set('cache-bust', Date.now()); // add a cache-busting parameter
+  // If the sort order is 'newest' or 'oldest', reverse the order of the list
 
-    fetch(url + '?' + params.toString())
-      .then(response => response.json())
-      .then(data => {
-        // update the contact list with the new data
-        let contactList = document.getElementById('contact-list');
-        contactList.innerHTML = ''; // clear the existing list
-        data.forEach(contact => {
-          let contactHTML = `
-            <li class="contact">
-              <span class="contact-name">${contact.name}</span>
-              <span class="contact-email">${contact.email}</span>
-              <span id="age-verified">${contact.ageVerified}</span>
-              <span class="message-btn">${contact.onlineOfflineStatus}</span>
-            </li>
-          `;
-          contactList.innerHTML += contactHTML;
-        });
-      });
+  if (sortOrder === "newest") {
+    // Reverse the order of the list
+    var container = document.getElementById('contact-list');
+    var children = container.children;
+    for (var i = children.length - 1; i >= 0; i--) {
+      container.appendChild(children[i]);
+    }
+  } else if (sortOrder === "oldest") {
+    // Do nothing, the list is already in the correct order
   }
 }
 

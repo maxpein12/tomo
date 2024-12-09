@@ -184,15 +184,16 @@ def UserList(request):
         users_with_post_count = contact_data
 
     # Sort the contact data based on the selected option
-    if sort == 'newest':
-        users_with_post_count = sorted(users_with_post_count, key=lambda x: x['user'].pk, reverse=True)
-    
-    elif sort == 'oldest':
-        users_with_post_count = sorted(users_with_post_count, key=lambda x: x['user'].pk)
-    
+    sort_by = request.GET.get('sort_by')
+
+    if sort_by == 'newest':
+        users_with_post_count = sorted(users_with_post_count, key=lambda x: x['user'].pkuser, reverse=True)
+    elif sort_by == 'oldest':
+        users_with_post_count = sorted(users_with_post_count, key=lambda x: x['user'].pkuser)
    
     # Render the contact page with the contact data
     return render(request, 'userlist.html', {'users_with_post_count': users_with_post_count, 'total_users': total_users})
+    
    
 @receiver(post_save, sender=Users)
 def invalidate_cache(sender, instance, **kwargs):
