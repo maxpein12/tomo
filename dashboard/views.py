@@ -33,7 +33,7 @@ from datetime import datetime, timedelta
 
 now = datetime.now()
 
-# @login_required
+@login_required
 def SalesChart(request):
     year = request.GET.get('year', now.year)
     orders = ViewPurchases.objects.all().order_by('-datetime')
@@ -75,7 +75,7 @@ def SalesChart(request):
 from django.core.cache import cache
 
 from django.core.paginator import Paginator
-# @login_required
+@login_required
 def SalesReport(request):
     cache_key = 'view_purchases_data'
     view_purchases_data = cache.get(cache_key)
@@ -118,12 +118,12 @@ def PurchaseHistory(request):
 
 
 
-# @login_required
+@login_required
 def ReportList(request): 
     reports = BlockUser.objects.filter(flags__in=[2, 3, 5]).order_by('-datetime')
     return render(request, 'reportlist.html', {'reports': reports})
 
-# @login_required
+@login_required
 def Pricing(request):
     prices = PointsBundle.objects.all().order_by('-pkpoint_bundle')
     return render(request, 'pricing.html', {'prices': prices})
@@ -152,7 +152,7 @@ def edit_points_bundle(request, pk):
 
 
 from django.core.cache import cache
-# @login_required
+@login_required
 def UserList(request):
     # Check if the contact data is cached
     total_users = Users.objects.count()
@@ -204,7 +204,7 @@ def invalidate_cache_on_post_save(sender, instance, **kwargs):
 
 
 
-# @login_required
+@login_required
 def AdminList(request):
     teams = Team.objects.all()
     users = Users.objects.all()
@@ -253,6 +253,8 @@ import hashlib
 
 import mysql.connector
 
+from django.contrib.auth import login
+
 def loginpage(request):
     if request.method == 'POST':
         email = request.POST['email']
@@ -287,7 +289,17 @@ def loginpage(request):
             user_id_real = result[1]
             nickname = result[2]
 
-            # Return the user_id, user_id_real, and nickname as needed
+            # Create a Django user object
+            from django.contrib.auth.models import User
+            user = User.objects.get_or_create(username=user_id)[0]
+
+            # Set the backend attribute on the user
+            user.backend = 'django.contrib.auth.backends.ModelBackend'
+
+            # Log the user in
+            login(request, user)
+
+            # Return the user to the userlist page
             return render(request, 'userlist.html')
         else:
             # Return an error message
@@ -307,7 +319,7 @@ import pytz
 from datetime import datetime
 
 
-# @login_required
+@login_required
 def UserProfile(request, pkuser):
     message_templates = [{'value': urllib.parse.unquote(template[0])} for template in MessageTemplates.objects.values_list('value')]
     user = get_object_or_404(Users, pk=pkuser)
@@ -419,7 +431,7 @@ def UserProfile(request, pkuser):
 
 
 from django.core.cache import cache
-# @login_required
+@login_required
 def PostsList(request):
     # Check if the product data is cached
     product_data = cache.get('product_data')
