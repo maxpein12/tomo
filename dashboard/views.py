@@ -300,7 +300,7 @@ def loginpage(request):
             login(request, user)
 
             # Return the user to the userlist page
-            return render(request, 'userlist.html')
+            return redirect('dashboard:UserList')
         else:
             # Return an error message
             error_msg = 'Invalid username or password'
