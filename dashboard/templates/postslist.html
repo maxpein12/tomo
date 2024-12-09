@@ -103,11 +103,15 @@
                           {% for post in posts %}
                           <tr>
                             <td>{{ post.pkpost }}</td>
-                            <td>{{ post.fkuser.name }}</td>
+                            {% if post.fkuser.pkuser %}
+                            <td><a href="{% url 'dashboard:UserProfile' pkuser=post.fkuser.pkuser %}">{{ post.fkuser.name }}</a></td>
+                          {% else %}
+                            <td>{{ post.fkuser.name }} (no pkuser)</td>
+                          {% endif %}
                             <td style="width: 200px;">{{ post.description }}</td>
                             <td>
-                                
-                                <a href="http://52.221.236.229:8069/media/board_photos/{{ post.pkpost }}/image.jpg"><img src="http://52.221.236.229:8069/media/board_photos/{{ post.pkpost }}/image.jpg" style="width: 200px; height: 100px;" alt=""></a></td>
+                              <a href="http://52.221.236.229:8069/media/board_photos/{{ post.pkpost }}/image.jpg"><img src="http://52.221.236.229:8069/media/board_photos/{{ post.pkpost }}/image.jpg" style="width: 200px; height: 100px;" alt=""></a>
+                            </td>
                             <td>{{ post.datetime }}</td>
                             <td>
                               {% if post.status == 1 %}
@@ -120,7 +124,7 @@
                           </tr>
                           {% endfor %}
                         </tbody>
-                    </table>
+                      </table>
                     {% endcache %}
                 </div>
 

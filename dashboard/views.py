@@ -436,7 +436,7 @@ from django.core.cache import cache
 def PostsList(request):
     # Check if the product data is cached
     product_data = cache.get('product_data')
-
+    
     if product_data is None:
         # If the product data is not cached, retrieve it from the database
         posts = Posts.objects.all().order_by('-datetime')
