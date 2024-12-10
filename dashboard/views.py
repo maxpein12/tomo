@@ -404,38 +404,7 @@ def UserProfile(request, pkuser):
     if conversation_user_id:
         conversation_user = get_object_or_404(Users, pk=conversation_user_id)
         messages = Messages.objects.filter(Q(msg_from=user, msg_to=conversation_user) | Q(msg_from=conversation_user, msg_to=user))
-        for message in messages:
-            
-            
-            if message.datetime:
-                datetime_obj = datetime.strptime(message.datetime, '%Y-%m-%d %H:%M %p')
-                date_string = datetime_obj.strftime('%Y-%m-%d %I:%M %p')
-                date_parts = date_string.split(' ')
-                if len(date_parts) >= 3:
-                    date = date_parts[0]
-                    time = date_parts[1]
-                    am_pm = date_parts[2]
-                    time_parts = time.split(':')
-                    if len(time_parts) == 2:
-                        hour, minute = time_parts
-                        hour = int(hour)
-                        minute = int(minute)
-                    else:
-                        hour = 0
-                        minute = 0
-                    if am_pm == 'PM' and hour != 12:
-                        hour += 12
-                    elif am_pm == 'AM' and hour == 12:
-                        hour = 0
-                    if hour > 23:  # handle invalid hour values
-                        hour = 23
-                    datetime_obj = datetime.strptime(f'{date} {hour}:{minute}', '%Y-%m-%d %H:%M')
-                    if datetime_obj.tzinfo is None:
-                                            datetime_obj = datetime_obj.replace(tzinfo=pytz.UTC)
-                    message.datetime_obj = datetime_obj
-                else:
-                    message.datetime_obj = None
-        messages = sorted(messages, key=lambda x: x.datetime_obj or datetime.min)
+        messages = sorted(messages, key=lambda x: x.pkmessage)
         print(messages)
     else:
         messages = []

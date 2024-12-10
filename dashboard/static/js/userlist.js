@@ -168,14 +168,19 @@ function searchContacts() {
   // If the sort order is 'newest' or 'oldest', reverse the order of the list
 
   if (sortOrder === "newest") {
-    // Reverse the order of the list
+    // Reverse the order of the list (newest to oldest)
     var container = document.getElementById('contact-list');
     var children = container.children;
     for (var i = children.length - 1; i >= 0; i--) {
       container.appendChild(children[i]);
     }
   } else if (sortOrder === "oldest") {
-    // Do nothing, the list is already in the correct order
+    // Reverse the order of the list (oldest to newest)
+    var container = document.getElementById('contact-list');
+    var children = container.children;
+    for (var i = 0; i < children.length; i++) {
+      container.insertBefore(children[i], container.firstChild);
+    }
   }
 }
 
