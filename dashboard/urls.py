@@ -2,7 +2,7 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 from . import views
-from .views import DeletePostView, add_admin_member, update_price
+from .views import DeletePostView, add_admin_member, update_price, update_user_list
 # from .views import NewPostView
 
 app_name = 'dashboard'
@@ -33,4 +33,5 @@ urlpatterns = [
     path('delete_message/<pk>/', views.delete_message, name='delete_message'),
     path('add_message/', views.add_message, name='add_message'),
     path('delete_admin/<pk>/', views.delete_admin, name='delete_admin'),
+    path('update_user_list/', update_user_list, name='update_user_list'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

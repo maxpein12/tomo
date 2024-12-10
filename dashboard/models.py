@@ -3,6 +3,9 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.contrib.auth.hashers import check_password
 from django.db import models
+from django.db import models
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
 from django.contrib.auth.models import AbstractBaseUser
 
 # Create your models here.
@@ -479,6 +482,12 @@ class Users(models.Model):
 
     def get_password(self):
         return "*****"  # or any other placeholder you want to display
+    
+    def save(self, *args, **kwargs):
+        old_status = Users.objects.get(pk=self.pk).status
+        super().save(*args, **kwargs)
+        if old_status != self.status:
+            user_status_changed.send(sender=self)
 
     class Meta:
         managed = False
@@ -486,6 +495,25 @@ class Users(models.Model):
 
     def __str__(self):
         return self.name
+
+# Define signal handlers at the top level of the module
+# signals.py
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
+from django.core.cache import cache
+from .models import Users
+
+@receiver(post_save, sender=Users)
+def invalidate_cache_on_user_status_change(sender, instance, created, **kwargs):
+    # Delete the cached contact data
+    cache.delete('contact_data')
+
+@receiver(post_delete, sender=Users)
+def invalidate_cache_on_user_deleted(sender, instance, **kwargs):
+    # Delete the cached contact data
+    cache.delete('contact_data')
+
+    
 
 
 

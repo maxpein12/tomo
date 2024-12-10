@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import os
 from pathlib import Path
+# settings.py
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -38,9 +40,25 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'dashboard',
+    'rest_framework',
+    'channels',
+    'celery',
     
     
 ]
+CELERY_BROKER_URL = 'redis://0.0.0.0:6379'  # for Redis
+# CELERY_BROKER_URL = 'amqp://localhost'  # for RabbitMQ
+
+CELERY_RESULT_BACKEND = 'redis://0.0.0.0:6379'  # for Redis
+# CELERY_RESULT_BACKEND = 'amqp://localhost'  # for RabbitMQ
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('0.0.0.0', 6379)],
+        },
+    },
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

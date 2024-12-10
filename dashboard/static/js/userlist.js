@@ -229,4 +229,3 @@ images.forEach((image) => {
 //   }
 // };
 // xhr.send();
-

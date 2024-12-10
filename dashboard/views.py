@@ -23,12 +23,14 @@ from django.http import JsonResponse
 from django.db.models import Q, Count
 # from django.contrib.auth.decorators import login_required
 from django.dispatch import receiver
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from .models import Users, Match
 from datetime import timedelta
 import datetime
 from dateutil import parser
 from datetime import datetime, timedelta
+from django.core.cache import cache
+
 
 
 now = datetime.now()
@@ -72,7 +74,7 @@ def SalesChart(request):
 
 
 
-from django.core.cache import cache
+
 
 from django.core.paginator import Paginator
 @login_required
@@ -151,11 +153,11 @@ def edit_points_bundle(request, pk):
 
 
 
-from django.core.cache import cache
+
 @login_required
 def UserList(request):
+    cache.clear()
     # Check if the contact data is cached
-    total_users = Users.objects.count()
     contact_data = cache.get('contact_data')
     sort = request.GET.get('sort')
 
@@ -191,19 +193,41 @@ def UserList(request):
     elif sort_by == 'oldest':
         users_with_post_count = sorted(users_with_post_count, key=lambda x: x['user'].pkuser)
    
+    # Get the total number of users
+    total_users = len(users_with_post_count)
+
     # Render the contact page with the contact data
     return render(request, 'userlist.html', {'users_with_post_count': users_with_post_count, 'total_users': total_users})
-    
-   
+
 @receiver(post_save, sender=Users)
-def invalidate_cache(sender, instance, **kwargs):
-    cache.delete('contact_data')
+def invalidate_cache_on_user_status_change(sender, instance, created, **kwargs):
+    print("invalidate_cache_on_user_status_change called")
+    if created:
+        print("New user created")
+        users = Users.objects.all()
+        print("Users:", users)
+        cache.set('contact_data', users)
 
-@receiver(post_save, sender=Posts)
-def invalidate_cache_on_post_save(sender, instance, **kwargs):
-    cache.delete('contact_data')
+@receiver(post_delete, sender=Users)
+def invalidate_cache_on_user_deleted(sender, instance, **kwargs):
+    print("invalidate_cache_on_user_deleted called")
+    users = Users.objects.all()
+    print("Users:", users)
+    cache.set('contact_data', users)
 
 
+
+
+
+# Assuming you have a view or a method where the user's status is updated
+@receiver(post_save, sender=Users)
+def invalidate_cache_on_user_status_change(sender, instance, created, **kwargs):
+    print("invalidate_cache_on_user_status_change called")
+    if not created:
+        old_status = Users.objects.get(pk=instance.pk).status
+        if old_status != instance.status:
+            print("User status changed, invalidating cache")
+            cache.delete('contact_data')
 
 @login_required
 def AdminList(request):
@@ -431,7 +455,7 @@ def UserProfile(request, pkuser):
     })
 
 
-from django.core.cache import cache
+
 @login_required
 def PostsList(request):
     # Check if the product data is cached
@@ -596,3 +620,33 @@ def invalidate_cache(request):
 
     # Return a JSON response indicating success
     return JsonResponse({'success': True})
+
+from django.views.decorators.http import require_http_methods
+@require_http_methods(['POST'])
+def update_user_list(request):
+    status = request.POST.get('status')
+    sort_order = request.POST.get('sort_order')
+    search_input = request.POST.get('search_input')
+
+    users = User.objects.all()
+
+    if status:
+        users = users.filter(status=status)
+
+    if search_input:
+        users = users.filter(name__icontains=search_input) | users.filter(email__icontains=search_input)
+
+    if sort_order == 'newest':
+        users = users.order_by('-created_at')
+
+    user_list = []
+    for user in users:
+        user_list.append({
+            'name': user.name,
+            'email': user.email,
+            'status': user.status,
+        })
+
+    return JsonResponse({'users': user_list})
+
+
