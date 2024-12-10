@@ -427,6 +427,7 @@ def UserProfile(request, pkuser):
 
 @login_required
 def PostsList(request):
+    cache.clear()
     # Check if the product data is cached
     product_data = cache.get('product_data')
     
