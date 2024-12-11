@@ -166,9 +166,10 @@
                         <input type="text" value="{% if form.status.value == 1 %} Online {% else %} Offline {% endif %}" readonly>
                     </div>
                     <div class="form-group">
-                        <label for="{{ form.age_verified.id_for_label }}">Identity Verification</label>
+                        <label for="age_verified">Age Verification</label>
                         {{ form.age_verified }}
-                    </div>
+                        <input type="hidden" id="age_verified_value" value="{{ form.age_verified.value }}">
+                      </div>
                     <div class="form-group">
                         <label for="{{ form.call_minutes.id_for_label }}">Call duration (min)</label>
                         {{ form.call_minutes }}
@@ -178,9 +179,11 @@
                         {{ form.mail_count }}
                     </div>
                     
-                    <button type="submit" >Save Changes</button>
+                    <button type="submit" id="save-changes-button">Save Changes</button>
                 </form>
             </section>
+
+            
 
             <!-- Picture Validation Section -->
             <section class="chart-section">

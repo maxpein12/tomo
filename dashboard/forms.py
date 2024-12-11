@@ -2,6 +2,9 @@ from django import forms
 from .models import Users, PointsBundle, Posts
 from datetime import datetime
 from django.utils import timezone
+from django.core.mail import send_mail
+from django.http import HttpResponse
+
 # forms.py
 # class ImageForm(forms.ModelForm):
 #     class Meta:
@@ -54,11 +57,12 @@ class UserForm(forms.ModelForm):
 
         return cleaned_data
 
+    
 
     def is_valid(self):
         print("is_valid method called")
         return super().is_valid()
-    
+
     def save(self, *args, **kwargs):
         print("Save method called")
         # Get the user details from the form
@@ -71,6 +75,7 @@ class UserForm(forms.ModelForm):
         strPassword = self.cleaned_data.get('new_password')
 
         print("strPassword before update:", strPassword)
+        
 
         # Call the stored procedure to save the user details
         from django.db import connection
@@ -84,6 +89,15 @@ class UserForm(forms.ModelForm):
                 intAgeVerified,
                 strUserId
             ])
+            if intAgeVerified == 1:
+                subject = '身分証の承認が完了しました。'
+                body = '沢山のおしゃべりを楽しんでください！初回特典として、無料メッセージポイントと無料通話ポイントを購入ページから選択できます！'
+                email = strEmail
+                url = f"https://mail.google.com/mail/?view=cm&fs=1&to={email}&su={subject}&body={body}"
+                # Return a JSON response with the URL
+                from django.http import JsonResponse
+                return JsonResponse({'url': url})
+        
 
         return self.instance
     

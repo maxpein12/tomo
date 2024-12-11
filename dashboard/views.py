@@ -618,5 +618,3 @@ def update_user_list(request):
         })
 
     return JsonResponse({'users': user_list})
-
-

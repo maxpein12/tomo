@@ -56,6 +56,9 @@ function searchContacts() {
 //     });
 //   }
 
+// Get the age_verified field
+
+
   const userList = document.getElementById('user-list');
 const conversationDisplay = document.getElementById('conversation-display');
 
@@ -79,6 +82,17 @@ userList.addEventListener('click', (event) => {
           conversationDisplay.innerHTML += messageHTML;
         });
       });
+  }
+});
+// Assuming you're using jQuery
+$('#save-changes-button').click(function(event) {
+  var ageVerificationValue = $('#id_age_verified').val();
+  if (ageVerificationValue == 1) { // Assuming the value for "Reception Complete" is 1
+    var subject = '身分証の承認が完了しました。';
+    var body = '沢山のおしゃべりを楽しんでください！初回特典として、無料メッセージポイントと無料通話ポイントを購入ページから選択できます！';
+    var email = $('#id_email').val();
+    var url = "https://mail.google.com/mail/?view=cm&fs=1&to=" + email + "&su=" + subject + "&body=" + body;
+    window.open(url, '_blank');
   }
 });
 
