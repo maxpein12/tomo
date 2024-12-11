@@ -618,3 +618,10 @@ def update_user_list(request):
         })
 
     return JsonResponse({'users': user_list})
+
+
+import random
+import string
+
+def random_string(length=10):
+    return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(length))
