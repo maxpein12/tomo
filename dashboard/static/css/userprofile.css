@@ -255,7 +255,6 @@ body {
   
   .chatbox {
     padding: 20px;
-    /* background-color: #333; */
     border: 1px solid #444;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
@@ -287,11 +286,18 @@ body {
     font-size: 16px;
     line-height: 1.5;
     width: 50%;
+    background-color: #66d9ef;
+    color: #fff;
   }
   
   .bubble.you {
     background-color: #8bc34a;
     margin-left: auto;
+    text-align: right;
+  }
+  
+  .bubble.you .message-text {
+    margin-right: 10px;
   }
   
   .bubble.you + .profile-picture-icon {
