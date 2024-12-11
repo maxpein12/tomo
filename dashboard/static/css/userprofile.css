@@ -268,12 +268,24 @@ body {
     margin-bottom: 10px;
   }
   
+  .chat-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  
+  .profile-picture-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin: 0 10px;
+  }
+  
   .bubble {
     padding: 10px;
     border-radius: 10px;
     font-size: 16px;
     line-height: 1.5;
-    margin-bottom: 10px;
     width: 50%;
   }
   
@@ -282,9 +294,24 @@ body {
     margin-left: auto;
   }
   
+  .bubble.you + .profile-picture-icon {
+    order: 1;
+  }
+  
   .bubble:not(.you) {
     background-color: #66d9ef;
     margin-right: auto;
+  }
+  .bubble:not(.you) + .profile-picture-icon {
+    order: 0;
+  }
+  
+  .chat-container {
+    flex-direction: row;
+  }
+  
+  .chat-container .bubble.you {
+    margin-right: 10px;
   }
   
   .message-text {
@@ -419,3 +446,4 @@ body {
 #user-list li.active a span {
     color: #333;
 }
+

@@ -252,15 +252,25 @@
           <div class="conversation-container">
             <div id="conversation-display" class="chatbox">
               {% if conversation_user %}
-                <ul>
-                  {% for message in messages %}
-                    <li class="message">
-                      <div class="bubble {% if message.msg_from == user %}you{% endif %}">
-                        <span class="message-text">{{ message.data }}</span>
-                      </div>
-                    </li>
-                  {% endfor %}
-                </ul>
+              <ul>
+                {% for message in messages %}
+                  <li class="message">
+                    <div class="chat-container">
+                      {% if message.msg_from == user %}
+                        <div class="bubble you">
+                          <span class="message-text">{{ message.data }}</span>
+                        </div>
+                        <img src="http://52.221.236.229:8069/media/user_profile_photos/{{ message.msg_from.pk }}/image.jpg" alt="Profile Picture" class="profile-picture-icon">
+                      {% else %}
+                        <img src="http://52.221.236.229:8069/media/user_profile_photos/{{ message.msg_from.pk }}/image.jpg" alt="Profile Picture" class="profile-picture-icon">
+                        <div class="bubble">
+                          <span class="message-text">{{ message.data }}</span>
+                        </div>
+                      {% endif %}
+                    </div>
+                  </li>
+                {% endfor %}
+              </ul>
               {% endif %}
             </div>
           </div>
