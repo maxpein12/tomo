@@ -509,7 +509,7 @@ def delete_user(request, pkuser):
         
         
         user.delete()
-        return redirect(reverse('dashboard:delete_user', kwargs={'pkuser': pkuser}))
+        return redirect(reverse('dashboard:UserList'))  # Redirect to the user list view
     else:
         return HttpResponse("Invalid request method")
     
