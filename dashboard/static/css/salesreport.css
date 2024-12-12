@@ -319,3 +319,13 @@ table .rejected {
     color: #ccc;
     cursor: not-allowed;
 }
+
+.main-content.hidden {
+    margin-left: 0; /* Remove left margin when sidebar is hidden */
+    width: 100%; /* Full width when sidebar is hidden */
+}
+
+.sidebar.hidden {
+    transform: translateX(-100%); /* Move the sidebar out of view */
+    transition: transform 0.3s ease; /* Smooth transition */
+}

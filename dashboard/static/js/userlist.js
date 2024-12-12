@@ -1,8 +1,5 @@
 // Show the form and hide the contact list
-document.getElementById('add-contact-btn').addEventListener('click', function () {
-  document.getElementById('contact-list').style.display = 'none';
-  document.getElementById('contact-input-container').style.display = 'block';
-});
+
 
 // Save the new contact and show the contact list again
 document.getElementById('save-contact-btn').addEventListener('click', function () {
@@ -203,6 +200,17 @@ const observer = new IntersectionObserver((entries) => {
 // Observe all images
 images.forEach((image) => {
   observer.observe(image);
+});
+
+const menuButton = document.getElementById('menuButton');
+const sidebar = document.querySelector('.sidebar');
+const mainContent = document.querySelector('.main-content');
+
+
+menuButton.addEventListener('click', () => {
+    sidebar.classList.toggle('hidden');
+    mainContent.classList.toggle('hidden'); // Toggle the main content's hidden class
+
 });
 
 // function updateTotalUsersCount() {

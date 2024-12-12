@@ -37,3 +37,4 @@ function cancelEdit(pk) {
     document.getElementById("template-" + pk).style.display = "block";
     document.getElementById("edit-template-" + pk).style.display = "none";
 }
+

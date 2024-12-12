@@ -268,3 +268,12 @@ body {
     filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg) brightness(102%) contrast(102%);
 }
 
+.main-content.hidden {
+    margin-left: 0; /* Remove left margin when sidebar is hidden */
+    width: 100%; /* Full width when sidebar is hidden */
+}
+
+.sidebar.hidden {
+    transform: translateX(-100%); /* Move the sidebar out of view */
+    transition: transform 0.3s ease; /* Smooth transition */
+}

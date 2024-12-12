@@ -5,3 +5,13 @@ document.querySelectorAll('.edit-btn').forEach(btn => {
     });
 });
 
+const menuButton = document.getElementById('menuButton');
+const sidebar = document.querySelector('.sidebar');
+const mainContent = document.querySelector('.main-content');
+
+
+menuButton.addEventListener('click', () => {
+    sidebar.classList.toggle('hidden');
+    mainContent.classList.toggle('hidden'); // Toggle the main content's hidden class
+
+});

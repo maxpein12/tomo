@@ -18,12 +18,23 @@ searchBar.addEventListener('input', function () {
 const prevButton = document.querySelector('.pagination-controls button:first-child');
 const nextButton = document.querySelector('.pagination-controls button:last-child');
 
-prevButton.addEventListener('click', function () {
-    console.log('Previous page');
-});
+// prevButton.addEventListener('click', function () {
+//     console.log('Previous page');
+// });
 
-nextButton.addEventListener('click', function () {
-    console.log('Next page');
+// nextButton.addEventListener('click', function () {
+//     console.log('Next page');
+// });
+
+const menuButton = document.getElementById('menuButton');
+const sidebar = document.querySelector('.sidebar');
+const mainContent = document.querySelector('.main-content');
+
+
+menuButton.addEventListener('click', () => {
+    sidebar.classList.toggle('hidden');
+    mainContent.classList.toggle('hidden'); // Toggle the main content's hidden class
+
 });
 
 
@@ -50,3 +61,5 @@ function searchReports() {
       }
     }
   }
+
+  
