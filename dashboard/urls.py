@@ -9,7 +9,8 @@ app_name = 'dashboard'
 
 
 urlpatterns = [
-    path('', views.UserList, name='UserList'),
+    path('', views.landing, name='landing'),
+    path('UserList/', views.UserList, name='UserList'),
     path('SalesChart/', views.SalesChart, name='SalesChart'),
     path('PostsList/', views.PostsList, name='PostsList'),
     path('SalesReport/', views.SalesReport, name='SalesReport'),

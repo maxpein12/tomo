@@ -1,6 +1,6 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from .models import  Team, Messages, Posts
-from .models import Users, BlockUser, ViewPurchases, PointsBundle, MessageTemplates, BlockUser, ViewedProfile
+from .models import Users, BlockUser, ViewPurchases, PointsBundle, MessageTemplates, BlockUser, ViewedProfile, Points
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
@@ -152,7 +152,8 @@ def edit_points_bundle(request, pk):
 
 
 
-
+def landing(request):
+    return render(request, 'landing.html')
 
 @login_required
 def UserList(request):
@@ -342,12 +343,18 @@ from django.utils import timezone
 from dateutil import parser
 import pytz
 from datetime import datetime
-
+import firebase_admin
+from firebase_admin import credentials, messaging
+# Initialize the Firebase app
+current_dir = os.path.dirname(__file__)
+cred = credentials.Certificate(os.path.join(current_dir, 'credentials.json'))
+firebase_admin.initialize_app(cred)
 
 @login_required
 def UserProfile(request, pkuser):
     message_templates = [{'value': urllib.parse.unquote(template[0])} for template in MessageTemplates.objects.values_list('value')]
     user = get_object_or_404(Users, pk=pkuser)
+    points = Points.objects.filter(fkuser=user).order_by('-pkpoint').first()
     form = UserForm(instance=user, include_password_fields=True)
     message_form = MessageForm()  # New form for sending messages
     dummy_user = Users.objects.get(pk=1)  # Replace with a valid user ID
@@ -380,7 +387,29 @@ def UserProfile(request, pkuser):
             if message_form.is_valid():
                 message = Messages(msg_from=request.user, msg_to=user, data=message_form.cleaned_data['data'], datetime=datetime.now().strftime('%Y-%m-%d  %I:%M %p'))
                 message.save_to_db()
+
+                fcm_token = user.token
+                
+
+                # Create a message to send to the user
+                message_to_send = messaging.Message(
+                    data={
+                        'title': 'New Message',
+                        'message': message_form.cleaned_data['data'],
+                        'sender_id': str(1)
+                    },
+                    token=fcm_token
+                )
+
+                # Send the message to the user
+                try:
+                    response = messaging.send(message_to_send)
+                    print('Message sent successfully:', response)
+                except Exception as e:
+                    print('Error sending message:', e)
+
                 return redirect('dashboard:UserProfile', pkuser=pkuser)
+                
         elif 'send_to_all' in request.POST:
             message_form = MessageForm(request.POST)
             if message_form.is_valid():
@@ -394,10 +423,27 @@ def UserProfile(request, pkuser):
             form = UserForm(request.POST, instance=user, include_password_fields=True)
             message_form = MessageForm()  # Set message_form to a valid form instance
             if form.is_valid():
-                print("Form is valid")
-                print("Form data:", form.cleaned_data)
-                print("New password:", form.cleaned_data.get('new_password'))
-                form.save()
+                if form.cleaned_data['age_verified'] == 3 or form.cleaned_data['age_verified'] == 1:
+                    fcm_token = user.token
+
+                    message_to_send = messaging.Message(
+                        data={
+                            'title': 'New Message',
+                            'message': 'restart',
+                            'sender_id': str(1)
+                        },
+                        token=fcm_token
+                    )
+                    try:
+                        response = messaging.send(message_to_send)
+                        print('Message sent successfully:', response)
+                    except Exception as e:
+                        print('Error sending message:', e)
+
+            print("Form is valid")
+            print("Form data:", form.cleaned_data)
+            print("New password:", form.cleaned_data.get('new_password'))
+            form.save()
 
    # Add the chat display logic here
     conversation_user_id = request.GET.get('conversation_user')
@@ -421,6 +467,7 @@ def UserProfile(request, pkuser):
         'conversation_user': conversation_user if conversation_user_id else None,
         'message_form': message_form,
         'message_templates': message_templates,# Pass the message form to the template
+        'points': points.count if points else None,
     })
 
 

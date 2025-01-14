@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-!gd5x%k$4bkt_5(+-=c=a-uts-m9h7p+x+0&z@dttf0sleo6oj
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'tomodachi.com', '192.168.1.20', '13.229.85.73']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'tomodachi.com', '192.168.1.20', 'tomodachi.ph' ,'13.229.85.73', '52.62.123.30']
 
 
 # Application definition
