@@ -346,9 +346,9 @@ from datetime import datetime
 import firebase_admin
 from firebase_admin import credentials, messaging
 # Initialize the Firebase app
-current_dir = os.path.dirname(__file__)
-cred = credentials.Certificate(os.path.join(current_dir, 'credentials.json'))
-firebase_admin.initialize_app(cred)
+# current_dir = os.path.dirname(__file__)
+# cred = credentials.Certificate(os.path.join(current_dir, 'credentials.json'))
+# firebase_admin.initialize_app(cred)
 
 @login_required
 def UserProfile(request, pkuser):
@@ -388,18 +388,18 @@ def UserProfile(request, pkuser):
                 message = Messages(msg_from=request.user, msg_to=user, data=message_form.cleaned_data['data'], datetime=datetime.now().strftime('%Y-%m-%d  %I:%M %p'))
                 message.save_to_db()
 
-                fcm_token = user.token
+                # fcm_token = user.token
                 
 
-                # Create a message to send to the user
-                message_to_send = messaging.Message(
-                    data={
-                        'title': 'New Message',
-                        'message': message_form.cleaned_data['data'],
-                        'sender_id': str(1)
-                    },
-                    token=fcm_token
-                )
+                # # Create a message to send to the user
+                # message_to_send = messaging.Message(
+                #     data={
+                #         'title': 'New Message',
+                #         'message': message_form.cleaned_data['data'],
+                #         'sender_id': str(1)
+                #     },
+                #     token=fcm_token
+                # )
 
                 # Send the message to the user
                 try:

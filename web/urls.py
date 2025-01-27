@@ -25,6 +25,8 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('dashboard/', include('dashboard.urls')),
+    path('PrivacyAndPolicy/', views.PrivacyAndPolicy, name='PrivacyAndPolicy'),
+    path('UserDeletionRequest/', views.UserDeletionRequest, name='UserDeletionRequest'),
     path('', views.home, name='home'),
     
 ]
