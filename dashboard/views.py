@@ -343,8 +343,8 @@ from django.utils import timezone
 from dateutil import parser
 import pytz
 from datetime import datetime
-import firebase_admin
-from firebase_admin import credentials, messaging
+# import firebase_admin
+# from firebase_admin import credentials, messaging
 # Initialize the Firebase app
 # current_dir = os.path.dirname(__file__)
 # cred = credentials.Certificate(os.path.join(current_dir, 'credentials.json'))
