@@ -289,7 +289,7 @@ def loginpage(request):
         # Connect to the MySQL database
         cnx = mysql.connector.connect(
             user='dbmasteruser',
-            password='oW-?ElK<,C~fo`e;3_;b[9svd<VdjEr2',
+            password=']w[}lAUWNjM1t2~b4AL#~Scc6g049H=P',
             host='ls-a6ea0c3b877a6923d6d9ca22364ab6ff3eb876b9.cleoey2mmxad.ap-southeast-1.rds.amazonaws.com',
             database='chatter'
         )

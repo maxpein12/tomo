@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-!gd5x%k$4bkt_5(+-=c=a-uts-m9h7p+x+0&z@dttf0sleo6oj
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'tomodachi.com', '192.168.1.20', 'tomodachi.ph' ,'13.229.85.73', '52.62.123.30']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -109,7 +109,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'chatter',
         'USER': 'dbmasteruser',
-        'PASSWORD': 'oW-?ElK<,C~fo`e;3_;b[9svd<VdjEr2',
+        'PASSWORD': ']w[}lAUWNjM1t2~b4AL#~Scc6g049H=P',
         'HOST': 'ls-a6ea0c3b877a6923d6d9ca22364ab6ff3eb876b9.cleoey2mmxad.ap-southeast-1.rds.amazonaws.com',
         'PORT': '3306',
     }
